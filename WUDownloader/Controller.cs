@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Threading;
 using System.Diagnostics;
 using System.Net;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Data;
 using System.Linq;
-
 namespace WUDownloader
 {
     class Controller
@@ -17,20 +14,25 @@ namespace WUDownloader
         FileIO f = new FileIO();
         Parser p = new Parser();
         DataTables d = new DataTables();
+        View v = new View();
         DataSet dataset = new DataSet("UpdateCatalog");
         string CATALOG_URL = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
         string OS = "Windows Server 2012 R2";
         public void Run()
         {
             List<string> lines = f.ImportFileToArray(@"D:\Input\Updates.txt");
+
+            DataTable updateCatalogTable = buildTable();
             List<string> updateNames = p.ParseLinesContaining(lines, "(KB");
 
+            //List<List<string>> downloadURLsList = new List<string>();
             foreach (string name in updateNames) //For each update
             {
                 string kb = name.Split('(', ')')[1];
-                openURLinNewTab(kb);
-                //doStuff(name, kb);
+                List<string> downloadURLs = getDownloadURLs(updateCatalogTable, name, kb);
+                v.PrintLines(downloadURLs);
             }
+            
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
         }
@@ -40,9 +42,32 @@ namespace WUDownloader
             Process.Start(CATALOG_URL + kb);
         }
 
-        public void doStuff(string name, string kb)
+        public List<string> getDownloadURLs(DataTable table, string name, string kb)
         {
-            DataTable updateCatalogTable = buildTable();
+            string buttonID = getButtonIDFromTable(table, name, kb);
+            string downloadDialogSiteHTML = makePost(buttonID);
+
+            string[] result = downloadDialogSiteHTML.Split(new[] { '\r', '\n' });
+            List<string> downloadURLs = new List<string>();
+            foreach (string line in result)
+            {
+                if (line.StartsWith("downloadInformation[0].files[")) //0].url = '"))
+                {
+                    if (line.Contains("].url = '"))
+                    {
+                        int pFrom1 = line.IndexOf("].url = '") + "].url = '".Length;
+                        int pTo1 = line.LastIndexOf("';");
+                        string downloadURL = line.Substring(pFrom1, pTo1 - pFrom1); // Download URL
+                        downloadURLs.Add(downloadURL);
+                    }
+                    
+                }
+            }
+            return downloadURLs;
+        }
+
+        public string getButtonIDFromTable(DataTable updateCatalogTable, string name, string kb)
+        {
             string tableName = updateCatalogTable.TableName;
             List<Object[]> dataFromRows = getDataFromRowsForUpdate(name, kb, updateCatalogTable);
 
@@ -53,10 +78,9 @@ namespace WUDownloader
             }
             DataRow[] foundRows = GetRowsByFilter(tableName, name, OS);
 
-            var buttonID = foundRows[0].ItemArray[0].ToString();
-            HtmlDocument siteAsHtml = getUpdateCatalogHTML(name, kb);
-            Console.WriteLine("Attempting to click button: ");
-            ClickButton(siteAsHtml, buttonID);
+            string buttonID = foundRows[0].ItemArray[0].ToString();
+            
+            return buttonID;
         }
 
         public void ClickButton(HtmlDocument siteAsHtml, string buttonID)
@@ -72,7 +96,7 @@ namespace WUDownloader
         {
             //Create DataSet, Update Catalog DataTable, Create DataColumns, and Add DataColumns to DataTable
             string tableName = "Update Catalog";
-            DataTable updateCatalogTable = dataset.Tables.Add(tableName);
+             DataTable updateCatalogTable = dataset.Tables.Add(tableName);
             DataColumn id = d.createColumn("System.String", "id", true, true);
             DataColumn title = d.createColumn("System.String", "title", false, false);
             DataColumn os = d.createColumn("System.String", "os", false, false);
@@ -93,7 +117,7 @@ namespace WUDownloader
             DataTable table = dataset.Tables[tableName];
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title  = '" + title + "' and os = '" + os + "'";
+            string expression = "title Like '%" + title + "%' and os Like '%" + os + "%'";
             string sortOrder = "lastUpdated DESC";
             DataRow[] foundRows;
 
@@ -101,16 +125,11 @@ namespace WUDownloader
             foundRows = table.Select(expression, sortOrder);
 
             return foundRows;
-            // Print column 0 of each returned row.
-            //for (int i = 0; i < foundRows.Length; i++)
-            //{
-            //    Console.WriteLine(foundRows[i][0]);
-            //}
         }
 
         public List<Object[]> getDataFromRowsForUpdate(string name, string kb, DataTable table)
         {
-            HtmlDocument siteAsHTML = getUpdateCatalogHTML(name, kb);
+            HtmlDocument siteAsHTML = getSiteAsHTML(CATALOG_URL + kb);
             HtmlElementCollection siteTableHTML = siteAsHTML.GetElementsByTagName("td");
             List<List<string>> dataStringsFromRows = getDataStringsFromRowsInCatalog(siteTableHTML);
             List<Object[]> dataFromRows = new List<Object[]>();
@@ -121,11 +140,11 @@ namespace WUDownloader
             return dataFromRows;
         }
 
-        public HtmlDocument getUpdateCatalogHTML(string name, string kb)
+        public HtmlDocument getSiteAsHTML(string url)//string name, string kb)
         {
             HtmlDocument siteAsHTML = GetHtmlDocument("");
-            Console.WriteLine("Attempting to collect HTML for update: " + name);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(CATALOG_URL + kb);
+            Console.WriteLine("Attempting to collect HTML for url: " + url);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -147,11 +166,11 @@ namespace WUDownloader
                 if (htmlString.Length > 0)
                 {
                     siteAsHTML = GetHtmlDocument(htmlString);
-                    Console.WriteLine("HTML collected for update: " + name);
+                    Console.WriteLine("HTML collected for url: " + url);
                 }
                 else if (htmlString.Length == 0)
                 {
-                    Console.WriteLine("HTML not collected for update: " + name);
+                    Console.WriteLine("HTML not collected for url: " + url);
                 }
                 
                 response.Close();
@@ -159,9 +178,49 @@ namespace WUDownloader
             }
             else
             {
-                Console.WriteLine("HTTPStatusCode Not OK -- HTML not collected for update: " + name);
+                Console.WriteLine("HTTPStatusCode Not OK -- HTML not collected for url: " + url);
             }
             return siteAsHTML;
+        }
+
+        public string makePost(string buttonID)//string url))
+        {
+            // Create a request using a URL that can receive a post. 
+            WebRequest request = WebRequest.Create("https://www.catalog.update.microsoft.com/DownloadDialog.aspx");
+            // Set the Method property of the request to POST.
+            request.Method = "POST";
+            // Create POST data and convert it to a byte array.
+            string postData = "updateIDs=[{\"size\":0,\"languages\":\"\",\"uidInfo\":\"" + buttonID + "\",\"updateID\":\"" + buttonID + "\"}]&updateIDsBlockedForImport=&wsusApiPresent=&contentImport=&sku=&serverName=&ssl=&portNumber=&version=";
+            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/x-www-form-urlencoded";
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+            // Get the request stream.
+            Stream dataStream = request.GetRequestStream();
+            // Write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            // Close the Stream object.
+            dataStream.Close();
+            // Get the response.
+            WebResponse response = request.GetResponse();
+            // Display the status.
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            // Get the stream containing content returned by the server.
+            dataStream = response.GetResponseStream();
+            // Open the stream using a StreamReader for easy access.
+            StreamReader reader = new StreamReader(dataStream);
+            // Read the content.
+            string responseFromServer = reader.ReadToEnd();
+            
+            // Display the content.
+                //Console.WriteLine(responseFromServer);
+            // Clean up the streams.
+            reader.Close();
+            dataStream.Close();
+            response.Close();
+
+            return responseFromServer;
         }
 
         public List<List<string>> getDataStringsFromRowsInCatalog(HtmlElementCollection elements)

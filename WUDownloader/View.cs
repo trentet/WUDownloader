@@ -17,7 +17,7 @@ namespace WUDownloader
                 Console.WriteLine("\t" + line);
             }
             // Keep the console window open in debug mode.
-            System.Console.ReadKey();
+           // System.Console.ReadKey();
         }
     }
 }
