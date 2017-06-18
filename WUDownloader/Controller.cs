@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using System.Text;
 using System.Data;
-using System.Linq;
+
 namespace WUDownloader
 {
     class Controller
@@ -18,23 +18,48 @@ namespace WUDownloader
         DataSet dataset = new DataSet("UpdateCatalog");
         string CATALOG_URL = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
         string OS = "Windows Server 2012 R2";
+        string downloadPath = "D:\\WUDownloader\\Downloads";
         public void Run()
         {
             List<string> lines = f.ImportFileToArray(@"D:\Input\Updates.txt");
 
             DataTable updateCatalogTable = buildTable();
-            List<string> updateNames = p.ParseLinesContaining(lines, "(KB");
+            List<string> updateTitles = p.ParseLinesContaining(lines, "(KB");
 
-            //List<List<string>> downloadURLsList = new List<string>();
-            foreach (string name in updateNames) //For each update
-            {
-                string kb = name.Split('(', ')')[1];
-                List<string> downloadURLs = getDownloadURLs(updateCatalogTable, name, kb);
-                v.PrintLines(downloadURLs);
-            }
+            List<DownloadObj> downloadList = new List<DownloadObj>();
             
+            foreach (string title in updateTitles) //For each update
+            {
+                string kb = title.Split('(', ')')[1];
+
+                List<string> downloadURLs = getDownloadURLs(updateCatalogTable, title, kb);
+
+                DownloadObj downloadObj = new DownloadObj(title, kb, downloadURLs);
+                downloadList.Add(downloadObj);
+            }
+
+            downloadFiles(downloadList, downloadPath);
+
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
+        }
+
+        public void downloadFiles(List<DownloadObj> downloadList, string downloadFolderPath)
+        {
+            var urls = new List<string>();
+            for (int x = 0; x < downloadList.Count; x++)
+            {
+                Console.WriteLine("Downloading files for update: " + downloadList[x].Title);
+                List<string> downloadURLs = downloadList[x].DownloadURLs;
+                int y = 1;
+                foreach (string downloadURL in downloadURLs)
+                {
+                    Downloader d = new Downloader();
+                    Console.WriteLine("File #{0} - {1}", y, downloadURL.Substring(downloadURL.LastIndexOf('/')+1));
+                    d.startDownload(downloadURL, downloadFolderPath);
+                    y++;
+                }
+            }            
         }
 
         public void openURLinNewTab(string kb)
@@ -59,8 +84,7 @@ namespace WUDownloader
                         int pTo1 = line.LastIndexOf("';");
                         string downloadURL = line.Substring(pFrom1, pTo1 - pFrom1); // Download URL
                         downloadURLs.Add(downloadURL);
-                    }
-                    
+                    }   
                 }
             }
             return downloadURLs;
@@ -81,15 +105,6 @@ namespace WUDownloader
             string buttonID = foundRows[0].ItemArray[0].ToString();
             
             return buttonID;
-        }
-
-        public void ClickButton(HtmlDocument siteAsHtml, string buttonID)
-        {
-            var button = siteAsHtml.GetElementsByTagName("button")
-                     .Cast<HtmlElement>()
-                     .FirstOrDefault(m => m.GetAttribute("input") == buttonID);
-            if (button != null)
-                button.InvokeMember("click");
         }
 
         public DataTable buildTable()
@@ -140,7 +155,7 @@ namespace WUDownloader
             return dataFromRows;
         }
 
-        public HtmlDocument getSiteAsHTML(string url)//string name, string kb)
+        public HtmlDocument getSiteAsHTML(string url)
         {
             HtmlDocument siteAsHTML = GetHtmlDocument("");
             Console.WriteLine("Attempting to collect HTML for url: " + url);

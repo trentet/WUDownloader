@@ -64,10 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CatalogItem.cs" />
+    <Compile Include="Downloader.cs" />
+    <Compile Include="DownloadObj.cs" />
     <Compile Include="DataTables.cs" />
-    <Compile Include="Update.cs" />
-    <Compile Include="Crawler.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="View.cs" />
     <Compile Include="Parser.cs" />
