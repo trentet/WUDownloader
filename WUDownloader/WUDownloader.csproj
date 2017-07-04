@@ -65,8 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Downloader.cs" />
-    <Compile Include="DownloadObj.cs" />
-    <Compile Include="DataTables.cs" />
+    <Compile Include="QueryController.cs" />
+    <Compile Include="WebController.cs" />
+    <Compile Include="DownloadManager.cs" />
+    <Compile Include="DownloadItem.cs" />
+    <Compile Include="TableBuilder.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="View.cs" />
     <Compile Include="Parser.cs" />

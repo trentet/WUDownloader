@@ -1,34 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace WUDownloader
 {
     class Downloader
     {
-        private bool isDownloadComplete;
+        private bool isCompleted;
+        private bool isDownloading;
 
-        public bool IsDownloadComplete { get => isDownloadComplete; set => isDownloadComplete = value; }
+        public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
+        public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
 
-        public void startDownload(string url, string downloadFolderPath)
+        public void startDownload(DownloadItem downloadItem, string downloadFolderPath)
         {
-            IsDownloadComplete = false;
+            isCompleted = false;
+            isDownloading = false;
             Thread thread = new Thread(() => {
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                 client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri(url), downloadFolderPath + url.Substring(url.LastIndexOf('/')));
+                client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath + downloadItem.DownloadUrl.Substring(downloadItem.DownloadUrl.LastIndexOf('/')));
             });
             thread.Start();
-            while (IsDownloadComplete == false)
+            thread.Join();
+            while (isCompleted == false)
             {
-
+                Thread.Sleep(1000);
             }
             thread.Abort();
         }
-        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+
+        void client_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
+            isDownloading = true;
             double bytesIn = double.Parse(e.BytesReceived.ToString());
             double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
             double percentage = Math.Round(bytesIn / totalBytes * 100, 2);
@@ -36,8 +46,9 @@ namespace WUDownloader
         }
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            Console.Write(" - Completed\n");
-            IsDownloadComplete = true;
+            isCompleted = true;
+            Console.WriteLine("\nDownload Completed\n\r");
+            isDownloading = false;
         }
     }
 }
