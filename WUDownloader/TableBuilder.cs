@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CoreTechs.Common.Text;
 
 namespace WUDownloader
 {
@@ -20,7 +21,7 @@ namespace WUDownloader
         public DataSet Dataset { get => dataset; set => dataset = value; }
         public string TableName { get => tableName; set => tableName = value; }
 
-        public void buildTable(string tablePath)
+        public void buildTableSchema(string tablePath)
         {
             //Create DataSet, Update Catalog DataTable, Create DataColumns, and Add DataColumns to DataTable
 
@@ -36,10 +37,28 @@ namespace WUDownloader
 
             List<DataColumn> columns = new List<DataColumn>(new DataColumn[] { id, title, os, classification, lastUpdated, version, size });//, buttonHTML });
             table = addColumnsToTable(columns);
-
-            f.ExportDataTableToCSV(table, tablePath);
         }
-        public void populateTable(HtmlDocument siteAsHtml, string tablePath)
+        public void populateTableFromCsv(List<string> csv, bool hasHeaders)
+        {
+            int startIndex;
+            if (hasHeaders == true)
+            {
+                startIndex = 1;
+            }
+            else
+            {
+                startIndex = 0;
+            }
+
+            for (int x = startIndex; x < csv.Count; x++)
+            {
+                Object[] rowContent = csv[x].Replace("\",\"", "\"|\"").Replace("\"","").Split('|');
+                DataRow row = createDataRow(assignTypesToData(rowContent));
+                table.Rows.Add(row);
+            }
+        }
+
+        public void populateTableFromSite(HtmlDocument siteAsHtml, string tablePath)
         {
             List<DataRow> typedDataRows = getTypedDataRowsFromHTML(siteAsHtml);
             foreach (DataRow datarow in typedDataRows) //Adds rows to table
@@ -134,5 +153,8 @@ namespace WUDownloader
             }
             return datarows;
         }
+
+        
+
     }
 }
