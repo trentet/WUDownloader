@@ -18,7 +18,7 @@ namespace WUDownloader
             Process.Start(CATALOG_URL + kb);
         }
 
-        public string makePost(string buttonID)//string url))
+        public static string makePost(string buttonID)//string url))
         {
             // Create a request using a URL that can receive a post. 
             WebRequest request = WebRequest.Create("https://www.catalog.update.microsoft.com/DownloadDialog.aspx");
@@ -61,7 +61,7 @@ namespace WUDownloader
             return responseFromServer;
         }
         
-        public HtmlDocument getSiteAsHTML(string url)
+        public static HtmlDocument getSiteAsHTML(string url)
         {
             HtmlDocument siteAsHTML = GetHtmlDocumentFromString("");
             //Console.WriteLine("Attempting to collect HTML for url: " + url);
@@ -104,7 +104,7 @@ namespace WUDownloader
             return siteAsHTML;
         }
 
-        public List<string> getDownloadURLs(string id)
+        public static List<string> getDownloadURLs(string id)
         {
             string downloadDialogSiteHTML = makePost(id);
 
@@ -126,7 +126,7 @@ namespace WUDownloader
             return downloadURLs;
         }
 
-    public System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
+    public static System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
         {
             WebBrowser browser = new WebBrowser();
             browser.ScriptErrorsSuppressed = true; //not necessesory you can remove it

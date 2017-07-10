@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -33,11 +34,20 @@ namespace WUDownloader
 
             for (int x = 0; x < SortedList.Count; x++)
             {
-                Console.WriteLine("\nDownloading file for update: " + SortedList[x].Title);
                 string downloadUrl = SortedList[x].DownloadUrl;
-                Downloader d = new Downloader();
-                Console.WriteLine("File #{0} - {1}", x, downloadUrl.Substring(downloadUrl.LastIndexOf('/') + 1));
-                d.startDownload(SortedList[x], downloadFolderPath);
+                Uri uri = new Uri(downloadUrl);
+                string fileName = System.IO.Path.GetFileName(uri.LocalPath);
+                Console.WriteLine("\nDownloading file for update: " + SortedList[x].Title);
+                Console.WriteLine("File #{0} - {1}", x, fileName);//downloadUrl.Substring(downloadUrl.LastIndexOf('/') + 1));
+                if (File.Exists(downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath)))
+                {
+                    Console.WriteLine("File already exists. Skipping...");
+                }
+                else
+                {
+                    Downloader d = new Downloader();
+                    d.startDownload(SortedList[x], downloadFolderPath);
+                }
             }
         }
     }

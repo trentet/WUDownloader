@@ -18,19 +18,7 @@ namespace WUDownloader
 
         public List<string> ImportCsvToStringList(string filepath)//, bool hasHeaders)
         {
-            //string csv;
-            //if (hasHeaders == true)
-            //{
-                List<string> csv = System.IO.File.ReadAllLines(filepath).ToList();
-
-                //csvWithHeaders.RemoveAt(0);
-                //csv = string.Join("", csvWithHeaders.ToArray());
-            //}
-            //else //has no headers
-            //{
-                //csv = System.IO.File.ReadAllLines(filepath).ToString();
-            //}
-            
+            List<string> csv = System.IO.File.ReadAllLines(filepath).ToList();
             return csv;
         }
         public void ExportDataTableToCSV(DataTable table, string filePath)

@@ -15,6 +15,7 @@ namespace WUDownloader
         private DataSet dataset = new DataSet("UpdateCatalog");
         private DataTable table;
         private string tableName = "Update Catalog";
+        private int columnCount;
         private FileIO f = new FileIO();
 
         public DataTable Table { get => table; set => table = value; }
@@ -33,10 +34,11 @@ namespace WUDownloader
             DataColumn lastUpdated = createColumn("System.DateTime", "lastUpdated", false, false);
             DataColumn version = createColumn("System.String", "version", false, false);
             DataColumn size = createColumn("System.String", "size", false, false);
-            //DataColumn buttonHTML = createColumn("System.String", "buttonHTML", false, false);
+            DataColumn downloadUrls = createColumn("System.String", "downloadUrls", false, false);
 
-            List<DataColumn> columns = new List<DataColumn>(new DataColumn[] { id, title, os, classification, lastUpdated, version, size });//, buttonHTML });
+            List<DataColumn> columns = new List<DataColumn>(new DataColumn[] { id, title, os, classification, lastUpdated, version, size, downloadUrls });
             table = addColumnsToTable(columns);
+            columnCount = columns.Count();
         }
         public void populateTableFromCsv(List<string> csv, bool hasHeaders)
         {
@@ -67,6 +69,9 @@ namespace WUDownloader
                 f.ExportDataTableToCSV(table, tablePath);
             }
         }
+
+
+
         public DataTable addColumnsToTable(List<DataColumn> columns)
         {
             foreach(DataColumn column in columns)
@@ -143,8 +148,9 @@ namespace WUDownloader
                     unparsedRow.Add(line);
                 }
             }
-            Object[] cellData = new Object[7];
-            int numOfRows = unparsedRow.Count / 7;
+            Object[] cellData = new Object[columnCount];
+            int numberOfColumnsNotParsedFromSite = 1;
+            int numOfRows = unparsedRow.Count / (columnCount - numberOfColumnsNotParsedFromSite);
             for (int x = 0; x < numOfRows; x++)
             {
                 cellData = p.parseHtmlRow(cellData.Length, unparsedRow, x);
@@ -153,8 +159,5 @@ namespace WUDownloader
             }
             return datarows;
         }
-
-        
-
     }
 }

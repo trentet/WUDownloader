@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Net;
 using System.IO;
-using System.Text;
-using System.Data;
 
 namespace WUDownloader
 {
@@ -55,15 +51,18 @@ namespace WUDownloader
             foreach (string updateTitle in updateTitles) //For each update
             {
                 Console.WriteLine("Collecting data for update " + (x+1) + " of " + updateTitles.Count + ".");
+
+                Console.WriteLine("Title is: |" + updateTitle + "|");
+                
                 //If exists, do thing
-                if (q.doesUpdateInfoExistInTable(t.Table, updateTitle, OS) == true)
+                if (q.doesUpdateTitleExistInTable(t.Table, updateTitle) == true)
                 {
                     Console.WriteLine("Update data already exists in table. Skipping...");
                 }
                 else
                 {
                     string kb = updateTitle.Split('(', ')')[1];
-                    HtmlDocument siteAsHtml = w.getSiteAsHTML(CATALOG_URL + kb);
+                    HtmlDocument siteAsHtml = WebController.getSiteAsHTML(CATALOG_URL + kb);
                     t.populateTableFromSite(siteAsHtml, tablePath);
                 }
                 x++;
@@ -75,8 +74,8 @@ namespace WUDownloader
             foreach (string title in updateTitles) //For each update
             {
                 string kb = title.Split('(', ')')[1];
-                string id = q.getIDFromTable(t.Table, title, OS);
-                List<string> downloadUrls = w.getDownloadURLs(id); //gets all download URLs for update at current index
+                //string id = QueryController.getIDFromTable(t.Table, title, OS);
+                string[] downloadUrls = q.getDownloadUrlsFromTable(t.Table, title, OS).Split(','); //gets all download URLs for update at current index
                 foreach (string downloadUrl in downloadUrls)
                 {
                     DownloadItem downloadItem = new DownloadItem(title, kb, downloadUrl);
