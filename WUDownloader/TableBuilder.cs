@@ -12,7 +12,6 @@ namespace WUDownloader
         private DataTable table;
         private string tableName = "Update Catalog";
         private int columnCount;
-        private FileIO f = new FileIO();
 
         public DataTable Table { get => table; set => table = value; }
         public DataSet Dataset { get => dataset; set => dataset = value; }
@@ -38,37 +37,31 @@ namespace WUDownloader
         }
         public void populateTableFromCsv(List<string> csv, bool hasHeaders)
         {
-            int startIndex;
+            int startIndex = 0;
             if (hasHeaders == true)
             {
-                startIndex = 1;
-            }
-            else
-            {
-                startIndex = 0;
+                startIndex = 1; //allows for skipping of headers
             }
 
             for (int x = startIndex; x < csv.Count; x++)
             {
-                Object[] rowContent = csv[x].Replace("\",\"", "\"|\"").Replace("\"","").Split('|');
-                DataRow row = createDataRow(assignTypesToData(rowContent));
+                Object[] rowContent = csv[x].Replace("\",\"", "\"|\"").Replace("\"","").Split('|'); //Separates out each element in between quotes
+                DataRow row = createDataRow(assignTypesToData(rowContent)); //creates DataRow with data types that match the table schema
                 table.Rows.Add(row);
             }
         }
 
         public void populateTableFromSite(HtmlDocument siteAsHtml, string tablePath)
         {
-            List<DataRow> typedDataRows = getTypedDataRowsFromHTML(siteAsHtml);
+            List<DataRow> typedDataRows = getTypedDataRowsFromHTML(siteAsHtml); //stores all DataRows from HtmlDocument
             foreach (DataRow datarow in typedDataRows) //Adds rows to table
             {
                 AddRowToTable(datarow);
-                f.ExportDataTableToCSV(table, tablePath);
+                FileIO.ExportDataTableToCSV(table, tablePath); //Saves table to CSV
             }
         }
 
-
-
-        public DataTable addColumnsToTable(List<DataColumn> columns)
+        private DataTable addColumnsToTable(List<DataColumn> columns)
         {
             foreach(DataColumn column in columns)
             {
@@ -77,7 +70,7 @@ namespace WUDownloader
             }
             return table;
         }
-        public DataColumn createColumn(string columnType, string columnName, Boolean readOnly, Boolean isUnique)
+        private DataColumn createColumn(string columnType, string columnName, Boolean readOnly, Boolean isUnique)
         {
             // Create new DataColumn, set DataType, 
             // ColumnName and add to DataTable.    
@@ -88,68 +81,70 @@ namespace WUDownloader
             column.Unique = isUnique;
             return column;
         }
-        public DataTable setPrimaryKeyColumn(string primaryColumnName)
+        private void setPrimaryKeyColumn(string primaryColumnName)
         {
             // Make the ID column the primary key column.
             DataColumn[] PrimaryKeyColumns = new DataColumn[1];
             PrimaryKeyColumns[0] = table.Columns[primaryColumnName];
             table.PrimaryKey = PrimaryKeyColumns;
-            return table;
         }
-        public DataRow createDataRow(Object[] cellData)
+        private DataRow createDataRow(Object[] cellData)
         {
             List<string> columnNames = new List<string>();
-            foreach (DataColumn column in table.Columns)
+            foreach (DataColumn column in table.Columns) //Gets list of all column names in the table
             {
                 columnNames.Add(column.ColumnName);
             }
+
             DataRow newRow = dataset.Tables[tableName].NewRow();
 
             for (int x = 0; x < cellData.Length; x++)
             {
-                Type columntype = cellData[x].GetType();
-                var data = cellData[x];
-                newRow[columnNames[x]] = data;
+                //Type columntype = cellData[x].GetType(); //gets
+                //var data = cellData[x];
+                newRow[columnNames[x]] = cellData[x];
             }
             return newRow;
         }
-        public void AddRowToTable(DataRow row)
+        private void AddRowToTable(DataRow row)
         {
             dataset.Tables[tableName].Rows.Add(row);
         }
-        public Object[] assignTypesToData(Object[] data)
+        private Object[] assignTypesToData(Object[] data)
         {
             Object[] convertedDatas = new Object[data.Length];
             List<DataColumn> columns = new List<DataColumn>();
             int x = 0;
-            foreach (DataColumn column in table.Columns)
+            foreach (DataColumn column in table.Columns) // iterates through each column in table
             {
-                convertedDatas[x] = Convert.ChangeType(data[x], column.DataType);
+                //converts data at current index to data type matching current indexes column
+                convertedDatas[x] = Convert.ChangeType(data[x], column.DataType); 
                 x++;
             }
 
             return convertedDatas;
         }
-        public List<DataRow> getTypedDataRowsFromHTML(HtmlDocument siteAsHtml)
+        private List<DataRow> getTypedDataRowsFromHTML(HtmlDocument siteAsHtml)
         {
+            //All elements with tag of "td"
             HtmlElementCollection cellElements = siteAsHtml.GetElementsByTagName("td");
             List<DataRow> datarows = new List<DataRow>();
-            Parser p = new Parser();
             List<string> unparsedRow = new List<string>();
             foreach (HtmlElement elem in cellElements)
             {
-                if (elem.GetAttribute("className").Contains("resultsbottomBorder") && !elem.GetAttribute("className").Contains("resultsIconWidth"))
+                if (elem.GetAttribute("className").Contains("resultsbottomBorder") && !elem.GetAttribute("className").Contains("resultsIconWidth")) //excludes empty column
                 {
                     string line = elem.InnerHtml;
-                    unparsedRow.Add(line);
+                    unparsedRow.Add(line); 
                 }
             }
             Object[] cellData = new Object[columnCount];
             int numberOfColumnsNotParsedFromSite = 1;
             int numOfRows = unparsedRow.Count / (columnCount - numberOfColumnsNotParsedFromSite);
+            Parser p = new Parser();
             for (int x = 0; x < numOfRows; x++)
             {
-                cellData = p.parseHtmlRow(cellData.Length, unparsedRow, x);
+                cellData = Parser.parseHtmlRow(cellData.Length, unparsedRow, x);
                 DataRow datarow = createDataRow(assignTypesToData(cellData));
                 datarows.Add(datarow);
             }

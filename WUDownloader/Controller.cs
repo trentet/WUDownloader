@@ -7,31 +7,27 @@ namespace WUDownloader
 {
     class Controller
     {
-        FileIO f = new FileIO();
-        Parser p = new Parser();
         TableBuilder t = new TableBuilder();
-        WebController w = new WebController();
-        View v = new View();
-        QueryController q = new QueryController();
         string CATALOG_URL = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
         string OS = "Windows Server 2012 R2";
         string downloadPath = "D:\\WUDownloader\\Downloads";
         string importPath = "D:\\WUDownloader\\Import";
         string tablePath = "D:\\WUDownloader\\Table\\UpdateCatalog";
+        public static string DOWNLOAD_DIALOG_URL = "https://www.catalog.update.microsoft.com/DownloadDialog.aspx";
         public void Run()
         {
             //Import Update List from File
-            List<string> lines = f.ImportFileToArray(importPath + "\\Updates.txt"); 
+            List<string> lines = FileIO.ImportFileToArray(importPath + "\\Updates.txt"); 
 
             //Parse Update Titles from imported lines
-            List<string> updateTitles = p.ParseLinesContaining(lines, "(KB");
+            List<string> updateTitles = Parser.ParseLinesContaining(lines, "(KB");
 
             //Check if file exists
             if (File.Exists(tablePath + ".csv")) //If exists
             {
                 Console.WriteLine("CSV file exists. Importing...");
                 //Import file
-                List<string> csv = f.ImportCsvToStringList(tablePath + ".csv");
+                List<string> csv = FileIO.ImportCsvToStringList(tablePath + ".csv");
 
                 //Build table with schema
                 t.buildTableSchema(tablePath);
@@ -43,7 +39,7 @@ namespace WUDownloader
                 Console.WriteLine("CSV file does not exists. Generating...");
                 //Build table from scratch
                 t.buildTableSchema(tablePath);
-                f.ExportDataTableToCSV(t.Table, tablePath);
+                FileIO.ExportDataTableToCSV(t.Table, tablePath);
             }
 
             Console.WriteLine("Attempting to collect data for " + updateTitles.Count + " updates...");
@@ -52,14 +48,14 @@ namespace WUDownloader
             {
                 Console.WriteLine("Collecting data for update " + (x+1) + " of " + updateTitles.Count + ".");
 
-                Console.WriteLine("Title is: |" + updateTitle + "|");
+                Console.WriteLine("Title is: " + updateTitle);
                 
-                //If exists, do thing
-                if (q.doesUpdateTitleExistInTable(t.Table, updateTitle) == true)
+                //If data exists in CSV file
+                if (QueryController.doesUpdateTitleExistInTable(t.Table, updateTitle) == true)
                 {
                     Console.WriteLine("Update data already exists in table. Skipping...");
                 }
-                else
+                else //Data doesn't exist in CSV file, so collect it and populate the table
                 {
                     string kb = updateTitle.Split('(', ')')[1];
                     HtmlDocument siteAsHtml = WebController.getSiteAsHTML(CATALOG_URL + kb);
@@ -69,13 +65,12 @@ namespace WUDownloader
             }
             Console.WriteLine("Data collection complete.");
 
-
             DownloadManager d = new DownloadManager();
             foreach (string title in updateTitles) //For each update
             {
                 string kb = title.Split('(', ')')[1];
-                //string id = QueryController.getIDFromTable(t.Table, title, OS);
-                string[] downloadUrls = q.getDownloadUrlsFromTable(t.Table, title, OS).Split(','); //gets all download URLs for update at current index
+                //gets all download URLs for update at current index
+                string[] downloadUrls = QueryController.getDownloadUrlsFromTable(t.Table, title, OS).Split(','); 
                 foreach (string downloadUrl in downloadUrls)
                 {
                     DownloadItem downloadItem = new DownloadItem(title, kb, downloadUrl);

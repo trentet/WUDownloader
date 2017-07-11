@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace WUDownloader
 {
-    class Downloader
+    class DownloadWorker
     {
         private bool isCompleted;
         private bool isDownloading;

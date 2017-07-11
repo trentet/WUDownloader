@@ -8,18 +8,18 @@ namespace WUDownloader
 {
     class FileIO
     {
-        public List<string> ImportFileToArray(string filepath)
+        public static List<string> ImportFileToArray(string filepath)
         {
             List<string> lines = System.IO.File.ReadAllLines(filepath).ToList();
             return lines;
         }
 
-        public List<string> ImportCsvToStringList(string filepath)//, bool hasHeaders)
+        public static List<string> ImportCsvToStringList(string filepath)
         {
             List<string> csv = System.IO.File.ReadAllLines(filepath).ToList();
             return csv;
         }
-        public void ExportDataTableToCSV(DataTable table, string filePath)
+        public static void ExportDataTableToCSV(DataTable table, string filePath)
         {
             using (StreamWriter writer = new StreamWriter(filePath + ".csv"))
             {
@@ -28,7 +28,7 @@ namespace WUDownloader
             }
         }
 
-        public static void WriteDataTable(DataTable sourceTable, TextWriter writer, bool includeHeaders)
+        private static void WriteDataTable(DataTable sourceTable, TextWriter writer, bool includeHeaders)
         {
             if (includeHeaders)
             {
