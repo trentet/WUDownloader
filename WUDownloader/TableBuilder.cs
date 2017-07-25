@@ -8,16 +8,16 @@ namespace WUDownloader
 {
     class TableBuilder
     {
-        private DataSet dataset = new DataSet("UpdateCatalog");
-        private DataTable table;
+        private static DataSet dataset = new DataSet("UpdateCatalog");
+        private static DataTable table;
         private string tableName = "Update Catalog";
         private int columnCount;
 
-        public DataTable Table { get => table; set => table = value; }
-        public DataSet Dataset { get => dataset; set => dataset = value; }
+        public static DataTable Table { get => table; set => table = value; }
+        public static DataSet Dataset { get => dataset; set => dataset = value; }
         public string TableName { get => tableName; set => tableName = value; }
 
-        public void buildTableSchema(string tablePath)
+        public void buildTableSchema()
         {
             //Create DataSet, Update Catalog DataTable, Create DataColumns, and Add DataColumns to DataTable
 

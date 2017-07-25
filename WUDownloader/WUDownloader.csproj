@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="DownloadWorker.cs" />
     <Compile Include="QueryController.cs" />
     <Compile Include="WebController.cs" />

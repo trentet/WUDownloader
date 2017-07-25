@@ -8,10 +8,15 @@ namespace WUDownloader
 {
     class FileIO
     {
-        public static List<string> ImportFileToArray(string filepath)
+        public static List<string> ImportFileToStringList(string filepath)
         {
             List<string> lines = System.IO.File.ReadAllLines(filepath).ToList();
             return lines;
+        }
+
+        public static void ExportStringArrayToFile(string filepath, string[] lines)
+        {
+            System.IO.File.WriteAllLines(filepath, lines);
         }
 
         public static List<string> ImportCsvToStringList(string filepath)

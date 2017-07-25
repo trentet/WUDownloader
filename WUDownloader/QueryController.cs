@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace WUDownloader
 {
@@ -14,26 +15,55 @@ namespace WUDownloader
             
             // Use the Select method to find all rows matching the filter.
             DataRow[] foundRows = table.Select(expression, sortOrder);
-
+            
             //First row in foundRows, at the 1st column (id)
             string id = foundRows[0].ItemArray[0].ToString();
 
             return id;
         }
 
-        public static string getDownloadUrlsFromTable(DataTable table, string title, string os)
+        public static List<string> getDownloadUrlsFromTable(DataTable table, string title, List<string> osList)
         {
             string tableName = table.TableName;
+            string orPieces = "";
+            
+            for(int x = 0; x < osList.Count; x++)
+            {
+                if (x == osList.Count - 1)
+                {
+                    orPieces += "os Like '%" + osList[x] + "%'";
+                }
+                else
+                {
+                    orPieces += "os Like '%" + osList[x] + "%' or ";
+                }
+            }
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title Like '%" + title + "%' and os Like '%" + os + "%'";
-            string sortOrder = "lastUpdated DESC";
+            string expression = "title Like '%" + title + "%' and (" + orPieces + ")";
+            string sortOrder = "os, lastUpdated DESC";
 
             // Use the Select method to find all rows matching the filter.
             DataRow[] foundRows = table.Select(expression, sortOrder);
+            List<DataRow> prunedRows = new List<DataRow>();
+
+            List<string> osGrabbed = new List<string>();
+            for (int x = 0; x < foundRows.Length; x++)
+            {
+                string currentRowOS = foundRows[x].ItemArray[2].ToString();
+                if (!osGrabbed.Contains(currentRowOS))
+                {
+                    osGrabbed.Add(currentRowOS);
+                    prunedRows.Add(foundRows[x]);
+                }
+            }
 
             //First row in foundRows, at the 7th column (downloadUrls)
-            string downloadUrls = foundRows[0].ItemArray[7].ToString();
+            List<string> downloadUrls = new List<string>();
+            foreach (DataRow row in prunedRows)
+            {
+                downloadUrls.Add(row.ItemArray[7].ToString());
+            }
 
             return downloadUrls;
         }
