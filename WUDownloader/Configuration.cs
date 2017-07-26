@@ -113,7 +113,6 @@ namespace WUDownloader
             DownloadFor_server2012 = (bool)configLines[11];
             DownloadFor_server2012R2 = (bool)configLines[12];
             DownloadFor_server2016 = (bool)configLines[13];
-
         }
     }
 }

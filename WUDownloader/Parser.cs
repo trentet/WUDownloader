@@ -65,7 +65,7 @@ namespace WUDownloader
             bool server2012 = false;
             bool server2012R2 = false;
             bool server2016 = false;
-            string downloadPathPrefix = "downloadPath =";
+            string downloadPathPrefix = "downloadPath=";
             string importPathPrefix = "importPath=";
             string tablePathPrefix = "tablePath=";
             string xpPrefix = "downloadForXP=";
@@ -91,16 +91,19 @@ namespace WUDownloader
                 else if (line.StartsWith(importPathPrefix)) //importPath
                 {
                     importPath = line.Remove(0, importPathPrefix.Length);
+                    continue;
                 }
                 else if (line.StartsWith(tablePathPrefix)) //tablePath
                 {
                     tablePath = line.Remove(0, tablePathPrefix.Length);
+                    continue;
                 }
                 else if (line.StartsWith(xpPrefix)) //XP
                 {
                     if (line.Remove(0, xpPrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         xp = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(vistaPrefix)) //Vista
@@ -108,6 +111,7 @@ namespace WUDownloader
                     if (line.Remove(0, vistaPrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         vista = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(sevenPrefix)) //7
@@ -115,6 +119,7 @@ namespace WUDownloader
                     if (line.Remove(0, sevenPrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         seven = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(eightPrefix)) //8
@@ -122,6 +127,7 @@ namespace WUDownloader
                     if (line.Remove(0, eightPrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         eight = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(eightOnePrefix)) //8.1
@@ -129,6 +135,7 @@ namespace WUDownloader
                     if (line.Remove(0, eightOnePrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         eightOne = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(tenPrefix)) //10
@@ -136,6 +143,7 @@ namespace WUDownloader
                     if (line.Remove(0, tenPrefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         ten = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(server2003Prefix)) //Server 2003
@@ -143,6 +151,7 @@ namespace WUDownloader
                     if (line.Remove(0, server2003Prefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         server2003 = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(server2008Prefix)) //Server 2008
@@ -150,6 +159,7 @@ namespace WUDownloader
                     if (line.Remove(0, server2008Prefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         server2008 = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(server2012Prefix)) //Server 2012
@@ -157,6 +167,7 @@ namespace WUDownloader
                     if (line.Remove(0, server2012Prefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         server2012 = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(server2012R2Prefix)) //Server 2012 R2
@@ -164,6 +175,7 @@ namespace WUDownloader
                     if (line.Remove(0, server2012R2Prefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         server2012R2 = true;
+                        continue;
                     }
                 }
                 else if (line.StartsWith(server2016Prefix)) //Server 2016
@@ -171,6 +183,7 @@ namespace WUDownloader
                     if (line.Remove(0, server2016Prefix.Length).Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         server2016 = true;
+                        continue;
                     }
                 }
             }

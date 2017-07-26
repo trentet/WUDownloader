@@ -78,7 +78,7 @@ namespace WUDownloader
 
             d.populateDownloadQueue(updateTitles);
             Console.WriteLine("Queue loading complete...");
-            d.downloadFilesFromQueue(Configuration.DownloadPath);
+            d.downloadFilesFromQueue();
 
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();

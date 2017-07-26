@@ -22,7 +22,7 @@ namespace WUDownloader
             return id;
         }
 
-        public static List<string> getDownloadUrlsFromTable(DataTable table, string title, List<string> osList)
+        public static List<string>[] getDownloadUrlsFromTable(DataTable table, string title, List<string> osList)
         {
             string tableName = table.TableName;
             string orPieces = "";
@@ -59,13 +59,17 @@ namespace WUDownloader
             }
 
             //First row in foundRows, at the 7th column (downloadUrls)
+            List<string> oses = new List<string>();
             List<string> downloadUrls = new List<string>();
             foreach (DataRow row in prunedRows)
             {
+                oses.Add(row.ItemArray[2].ToString());
                 downloadUrls.Add(row.ItemArray[7].ToString());
             }
 
-            return downloadUrls;
+            List<string>[] oses_and_downloadUrls = new List<string>[] {oses, downloadUrls };
+
+            return oses_and_downloadUrls;
         }
 
         public static bool doesUpdateTitleExistInTable(DataTable table, string title)

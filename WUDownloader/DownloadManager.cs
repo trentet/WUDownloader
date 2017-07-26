@@ -42,7 +42,7 @@ namespace WUDownloader
                 Console.WriteLine("Item not successfully added to download queue.");
             }
         }
-        public void downloadFilesFromQueue(string downloadFolderPath)
+        public void downloadFilesFromQueue()
         {
             Console.WriteLine("Initializing downloads...");
             Console.WriteLine("Download Queue Size: " + downloadQueue.Count);
@@ -56,12 +56,14 @@ namespace WUDownloader
                 string fileName = System.IO.Path.GetFileName(uri.LocalPath);
                 Console.WriteLine("\nDownloading file for update: " + SortedDownloadQueue[x].Title);
                 Console.WriteLine("File #{0} - {1}", (x+1), fileName); //{0} is current index, {1} is download's file name
-                if (File.Exists(downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
+                if (File.Exists(Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
                 {
                     Console.WriteLine("File already exists. Skipping...");
                 }
                 else //File is not already downloaded. Download.
                 {
+                    string downloadFolderPath = Configuration.DownloadPath + "\\" + SortedDownloadQueue[x].Os + "\\" + SortedDownloadQueue[x].Title;
+                    System.IO.Directory.CreateDirectory(downloadFolderPath);
                     DownloadWorker d = new DownloadWorker();
                     d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
                 }
@@ -73,16 +75,28 @@ namespace WUDownloader
             {
                 string kb = title.Split('(', ')')[1];
                 //gets all download URLs for update at current index
-                List<string> rowsOfDownloadUrls = QueryController.getDownloadUrlsFromTable(TableBuilder.Table, title, osList);//.Split(',');
-                foreach (string downloadUrlsFromRow in rowsOfDownloadUrls)
+                List<string>[] oses_and_downloadUrls = QueryController.getDownloadUrlsFromTable(TableBuilder.Table, title, osList);
+                List<string> osFromEachRow = oses_and_downloadUrls[0];
+                List<string> downloadUrlsFromEachRow = oses_and_downloadUrls[1];
+                for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
                 {
-                    string[] downloadUrls = downloadUrlsFromRow.Split(',');
+                    string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
+                    string os = osFromEachRow[x];
                     foreach (string downloadUrl in downloadUrls)
                     {
-                        DownloadItem downloadItem = new DownloadItem(title, kb, downloadUrl);
+                        DownloadItem downloadItem = new DownloadItem(title, kb, os, downloadUrl);
                         addDownloadItemToQueue(downloadItem);
                     }
-                }   
+                }
+                //foreach (string downloadUrlsFromRow in downloadUrlsFromEachRow)
+                //{
+                //    string[] downloadUrls = downloadUrlsFromRow.Split(',');
+                //    foreach (string downloadUrl in downloadUrls)
+                //    {
+                //        DownloadItem downloadItem = new DownloadItem(title, kb, downloadUrl);
+                //        addDownloadItemToQueue(downloadItem);
+                //    }
+                //}   
             }
         }
 
