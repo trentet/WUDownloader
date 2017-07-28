@@ -56,17 +56,65 @@ namespace WUDownloader
                 string fileName = System.IO.Path.GetFileName(uri.LocalPath);
                 Console.WriteLine("\nDownloading file for update: " + SortedDownloadQueue[x].Title);
                 Console.WriteLine("File #{0} - {1}", (x+1), fileName); //{0} is current index, {1} is download's file name
-                if (File.Exists(Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
+                string[] oses = SortedDownloadQueue[x].Os.Split(',');
+                for (int z = 0; z < oses.Length; z++)
                 {
-                    Console.WriteLine("File already exists. Skipping...");
+                    oses[z] = oses[z].Trim();
                 }
-                else //File is not already downloaded. Download.
+                for (int y = 0; y < oses.Length; y++)
                 {
-                    string downloadFolderPath = Configuration.DownloadPath + "\\" + SortedDownloadQueue[x].Os + "\\" + SortedDownloadQueue[x].Title;
-                    System.IO.Directory.CreateDirectory(downloadFolderPath);
-                    DownloadWorker d = new DownloadWorker();
-                    d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
+                    string downloadFolderPath = Configuration.DownloadPath + "\\" + oses[y] + "\\" + SortedDownloadQueue[x].Title;
+                    if (File.Exists(downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath)))//Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
+                    {
+                        Console.WriteLine("File already exists. Skipping...");
+                    }
+                    else //File is not already downloaded. Download.
+                    {
+                        //string[] oses = SortedDownloadQueue[x].Os.Split(',');
+                        //for (int z = 0; z < oses.Length; z++)
+                        //{
+                        //    oses[z] = oses[z].Trim();
+                        //}
+                        //for (int y = 0; y < oses.Length; y++)
+                        //{
+                            //See if current os list contains an OS from the oslist from config, then create folders and download files
+                            if (osList.Contains(oses[y]))
+                            {
+                            Console.WriteLine("Download Path: " + downloadFolderPath);
+                                Console.WriteLine("Downloading for " + oses[y]);
+                                //string downloadFolderPath = Configuration.DownloadPath + "\\" + oses[y] + "\\" + SortedDownloadQueue[x].Title;
+                                System.IO.Directory.CreateDirectory(downloadFolderPath);
+                                DownloadWorker d = new DownloadWorker();
+                                d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
+                            }
+                        //}
+                    }
                 }
+
+                //    if (File.Exists(Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
+                //    {
+                //    Console.WriteLine("File already exists. Skipping...");
+                //    }
+                //else //File is not already downloaded. Download.
+                //{
+                //    //string[] oses = SortedDownloadQueue[x].Os.Split(',');
+                //    //for (int z = 0; z < oses.Length; z++)
+                //    //{
+                //    //    oses[z] = oses[z].Trim();
+                //    //}
+                //    for (int y = 0; y < oses.Length; y++)
+                //    {
+                //        //See if current os list contains an OS from the oslist from config, then create folders and download files
+                //        if (osList.Contains(oses[y]))
+                //        {
+                //            Console.WriteLine("Downloading for " + oses[y]);
+                //            string downloadFolderPath = Configuration.DownloadPath + "\\" + oses[y] + "\\" + SortedDownloadQueue[x].Title;
+                //            System.IO.Directory.CreateDirectory(downloadFolderPath);
+                //            DownloadWorker d = new DownloadWorker();
+                //            d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
+                //        }
+                //    }
+                //}
             }
         }
         public void populateDownloadQueue(List<string> updateTitles)
@@ -88,15 +136,6 @@ namespace WUDownloader
                         addDownloadItemToQueue(downloadItem);
                     }
                 }
-                //foreach (string downloadUrlsFromRow in downloadUrlsFromEachRow)
-                //{
-                //    string[] downloadUrls = downloadUrlsFromRow.Split(',');
-                //    foreach (string downloadUrl in downloadUrls)
-                //    {
-                //        DownloadItem downloadItem = new DownloadItem(title, kb, downloadUrl);
-                //        addDownloadItemToQueue(downloadItem);
-                //    }
-                //}   
             }
         }
 

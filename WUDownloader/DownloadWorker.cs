@@ -14,6 +14,7 @@ namespace WUDownloader
         private bool isCompleted;
         private bool isDownloading;
 
+
         public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
         public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
 
@@ -25,7 +26,8 @@ namespace WUDownloader
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                 client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath + downloadItem.DownloadUrl.Substring(downloadItem.DownloadUrl.LastIndexOf('/')));
+                string test = downloadFolderPath;// + "\\" + downloadItem.DownloadUrl.Substring(downloadItem.DownloadUrl.LastIndexOf('/')).Replace("/","");
+                client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath);
             });
             thread.Start();
             thread.Join();
@@ -47,6 +49,7 @@ namespace WUDownloader
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             isCompleted = true;
+            if()
             Console.WriteLine("\nDownload Completed\n\r");
             isDownloading = false;
         }
