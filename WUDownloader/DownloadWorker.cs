@@ -26,8 +26,8 @@ namespace WUDownloader
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                 client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                string test = downloadFolderPath;// + "\\" + downloadItem.DownloadUrl.Substring(downloadItem.DownloadUrl.LastIndexOf('/')).Replace("/","");
-                client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath);
+                Uri uri = new Uri(downloadItem.DownloadUrl);
+                client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath));
             });
             thread.Start();
             thread.Join();
@@ -49,7 +49,7 @@ namespace WUDownloader
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             isCompleted = true;
-            if()
+            
             Console.WriteLine("\nDownload Completed\n\r");
             isDownloading = false;
         }

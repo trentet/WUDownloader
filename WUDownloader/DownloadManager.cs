@@ -64,19 +64,21 @@ namespace WUDownloader
                 for (int y = 0; y < oses.Length; y++)
                 {
                     string downloadFolderPath = Configuration.DownloadPath + "\\" + oses[y] + "\\" + SortedDownloadQueue[x].Title;
-                    if (File.Exists(downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath)))//Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
+                    string fullFilePath = downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath);
+                    if (fullFilePath.Length > 260)
+                    {
+                        int overflow = fullFilePath.Length - 260;
+                        string downloadFolderPathWithoutKB = downloadFolderPath.Split('(').First();
+                        downloadFolderPath = downloadFolderPathWithoutKB.Substring(0, downloadFolderPathWithoutKB.Length - overflow - 10) + " (" + SortedDownloadQueue[x].Kb + ")";
+                        fullFilePath = downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath);
+                        int test = fullFilePath.Length;
+                    }
+                    if (File.Exists(fullFilePath))//Checks if file is already downloaded
                     {
                         Console.WriteLine("File already exists. Skipping...");
                     }
                     else //File is not already downloaded. Download.
                     {
-                        //string[] oses = SortedDownloadQueue[x].Os.Split(',');
-                        //for (int z = 0; z < oses.Length; z++)
-                        //{
-                        //    oses[z] = oses[z].Trim();
-                        //}
-                        //for (int y = 0; y < oses.Length; y++)
-                        //{
                             //See if current os list contains an OS from the oslist from config, then create folders and download files
                             if (osList.Contains(oses[y]))
                             {
@@ -87,34 +89,8 @@ namespace WUDownloader
                                 DownloadWorker d = new DownloadWorker();
                                 d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
                             }
-                        //}
                     }
                 }
-
-                //    if (File.Exists(Configuration.DownloadPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath))) //Checks if file is already downloaded
-                //    {
-                //    Console.WriteLine("File already exists. Skipping...");
-                //    }
-                //else //File is not already downloaded. Download.
-                //{
-                //    //string[] oses = SortedDownloadQueue[x].Os.Split(',');
-                //    //for (int z = 0; z < oses.Length; z++)
-                //    //{
-                //    //    oses[z] = oses[z].Trim();
-                //    //}
-                //    for (int y = 0; y < oses.Length; y++)
-                //    {
-                //        //See if current os list contains an OS from the oslist from config, then create folders and download files
-                //        if (osList.Contains(oses[y]))
-                //        {
-                //            Console.WriteLine("Downloading for " + oses[y]);
-                //            string downloadFolderPath = Configuration.DownloadPath + "\\" + oses[y] + "\\" + SortedDownloadQueue[x].Title;
-                //            System.IO.Directory.CreateDirectory(downloadFolderPath);
-                //            DownloadWorker d = new DownloadWorker();
-                //            d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
-                //        }
-                //    }
-                //}
             }
         }
         public void populateDownloadQueue(List<string> updateTitles)
