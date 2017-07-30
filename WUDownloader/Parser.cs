@@ -49,8 +49,9 @@ namespace WUDownloader
             return rowData;
         }
 
-        public static object[] parseConfigFile(List<string> lines)
+        public static List<Object> parseConfigFile(List<string> lines)
         {
+            string rootPath = "";
             string downloadPath = "";
             string importPath = "";
             string tablePath = "";
@@ -65,6 +66,7 @@ namespace WUDownloader
             bool server2012 = false;
             bool server2012R2 = false;
             bool server2016 = false;
+            string rootPathPrefix = "rootPath=";
             string downloadPathPrefix = "downloadPath=";
             string importPathPrefix = "importPath=";
             string tablePathPrefix = "tablePath=";
@@ -83,7 +85,12 @@ namespace WUDownloader
 
             foreach (string line in lines)
             {
-                if (line.StartsWith(downloadPathPrefix)) //downloadPath
+                if (line.StartsWith(rootPathPrefix)) //downloadPath
+                {
+                    rootPath = line.Remove(0, rootPathPrefix.Length);
+                    continue;
+                }
+                else if (line.StartsWith(downloadPathPrefix)) //downloadPath
                 {
                     downloadPath = line.Remove(0, downloadPathPrefix.Length);
                     continue;
@@ -188,21 +195,22 @@ namespace WUDownloader
                 }
             }
 
-            Object[] configurationValues = new Object[14];
-            configurationValues[0] = downloadPath;
-            configurationValues[1] = importPath;
-            configurationValues[2] = tablePath;
-            configurationValues[3] = xp;
-            configurationValues[4] = vista;
-            configurationValues[5] = seven;
-            configurationValues[6] = eight;
-            configurationValues[7] = eightOne;
-            configurationValues[8] = ten;
-            configurationValues[9] = server2003;
-            configurationValues[10] = server2008;
-            configurationValues[11] = server2012;
-            configurationValues[12] = server2012R2;
-            configurationValues[13] = server2016;
+            List<Object> configurationValues = new List<Object>();
+            configurationValues.Add(rootPath);
+            configurationValues.Add(downloadPath);
+            configurationValues.Add(importPath);
+            configurationValues.Add(tablePath);
+            configurationValues.Add(xp);
+            configurationValues.Add(vista);
+            configurationValues.Add(seven);
+            configurationValues.Add(eight);
+            configurationValues.Add(eightOne);
+            configurationValues.Add(ten);
+            configurationValues.Add(server2003);
+            configurationValues.Add(server2008);
+            configurationValues.Add(server2012);
+            configurationValues.Add(server2012R2);
+            configurationValues.Add(server2016);
 
             return configurationValues;
         }

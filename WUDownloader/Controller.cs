@@ -8,34 +8,127 @@ namespace WUDownloader
     class Controller
     {
         TableBuilder t = new TableBuilder();
+        
         public void Run()
         {
-            if (!File.Exists(Configuration.ConfigurationFilePath)) //Config file is missing
+            ConfigurationSetup();
+            FolderStructureSetup();
+            
+            List<string> updateTitles = ImportUpdateTitles();
+            if (updateTitles.Count > 0)
             {
-                Configuration.setDefaultConfiguration(); //sets default values
-
-                FileIO.ExportStringArrayToFile(Configuration.ConfigurationFilePath, Configuration.getCurrentConfiguration());
+                SetupTable();
+                CollectUpdateDataForTable(updateTitles);
+                StartDownloadManager(updateTitles);
             }
-            else // Config File exists, import
+            else
             {
-                List<string> configLines = FileIO.ImportFileToStringList(Configuration.ConfigurationFilePath);
-                Object[] configValues = Parser.parseConfigFile(configLines);
-                Configuration.setNewConfiguration(configValues);
+                Console.WriteLine("No updates found in Updates.txt.");
             }
             
 
-            //Import Update List from File
-            List<string> lines = FileIO.ImportFileToStringList(Configuration.ImportPath + "\\Updates.txt"); 
+            Console.WriteLine("Exiting...");
+            System.Console.ReadKey();
+        }
+        private void FolderStructureSetup()
+        {
 
-            //Parse Update Titles from imported lines
-            List<string> updateTitles = Parser.ParseLinesContaining(lines, "(KB");
+            if (!Directory.Exists(Configuration.RootPath))
+            {
+                Configuration.setDefaultConfiguration();
+                Console.WriteLine("WUDownload folder structure is missing. Reconstructing using configuration settings...");
+                Configuration.setDefaultConfiguration();
+                Directory.CreateDirectory(Configuration.RootPath);
+                Directory.CreateDirectory(Configuration.DownloadPath);
+                Directory.CreateDirectory(Configuration.ImportPath);
+                Directory.CreateDirectory(Configuration.TablePath);
+                if (Directory.Exists(Configuration.RootPath) && Directory.Exists(Configuration.DownloadPath) &&
+                    Directory.Exists(Configuration.ImportPath) && Directory.Exists(Configuration.TablePath))
+                {
+                    Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootPath);
+                }
+                else
+                {
+                    Console.WriteLine("Folder creation failed. Attempted root folder creation at: " + Configuration.RootPath);
+                }
+            }
+        }
+        private void ConfigurationSetup()
+        {
+            Console.WriteLine("Attempting to import configuration file at " + Configuration.ConfigurationFilePath);
+            
+            if (!Directory.Exists(Configuration.ConfigurationFolderPath)) //Config file is missing
+            {
+                Directory.CreateDirectory(Configuration.ConfigurationFolderPath);
+            }
+            if (!File.Exists(Configuration.ConfigurationFilePath))
+            {
+                Console.WriteLine("Configuration file does not exist. Recreating with default settings.");
+                Configuration.setDefaultConfiguration(); //sets default values
 
+                FileIO.ExportStringListToFile(Configuration.ConfigurationFilePath, Configuration.getCurrentConfiguration());
+                if (!File.Exists(Configuration.ConfigurationFilePath))
+                {
+                    Console.WriteLine("Something went wrong. Configuration file not saved.");
+                }
+                else
+                {
+                    Console.WriteLine("Configuration file saved successfully.");
+                }
+            }
+            else // Config File exists, import
+            {
+                Console.WriteLine("Configuration file detected. Importing...");
+                List<string> configLines = FileIO.ImportFileToStringList(Configuration.ConfigurationFilePath);
+                List<Object> configValues = Parser.parseConfigFile(configLines);
+                Configuration.setNewConfiguration(configValues);
+                Console.WriteLine("Configuration settings imported.");
+            }
+        }
+
+        private List<string> ImportUpdateTitles()
+        {
+            string updatesFilePath = Configuration.ImportPath + "\\Updates.txt";
+            List<string> updateTitles = new List<string>();
+            Console.WriteLine("Importing update title list from file: " + updatesFilePath);
+
+            if (File.Exists(updatesFilePath))
+            {
+                //Import Update List from File
+                List<string> lines = FileIO.ImportFileToStringList(updatesFilePath);
+
+                //Parse Update Titles from imported lines
+                updateTitles = Parser.ParseLinesContaining(lines, "(KB");
+                Console.WriteLine(updateTitles.Count + " update titles collected.");
+            }
+            else
+            {
+                Console.WriteLine("Update.txt file not found at " + updatesFilePath);
+                File.Create(updatesFilePath).Dispose();
+                if (File.Exists(updatesFilePath))
+                {
+                    Console.WriteLine("Updates.txt file created. Please populate it with update information and restart WUDownloader.");
+
+                }
+                else
+                {
+                    Console.WriteLine("Something went wrong. Updates.txt not created at " + updatesFilePath);
+                }
+                Console.WriteLine("Exiting...");
+                System.Console.ReadKey();
+                Environment.Exit(0);
+            }
+            
+            return updateTitles;
+        }
+        private void SetupTable()
+        {
             //Check if file exists
-            if (File.Exists(Configuration.TablePath + ".csv")) //If exists
+            if (File.Exists(Configuration.TablePath + "\\" + Configuration.TableName + ".csv")) //If exists
             {
                 Console.WriteLine("CSV file exists. Importing...");
                 //Import file
-                List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + ".csv");
+                List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
 
                 //Build table with schema
                 t.buildTableSchema();
@@ -47,17 +140,20 @@ namespace WUDownloader
                 Console.WriteLine("CSV file does not exists. Generating...");
                 //Build table from scratch
                 t.buildTableSchema();
-                FileIO.ExportDataTableToCSV(TableBuilder.Table, Configuration.TablePath);
+                FileIO.ExportDataTableToCSV(TableBuilder.Table, Configuration.TablePath, Configuration.TableName);
+                Console.WriteLine("CSV file saved.");
             }
-
+        }
+        private void CollectUpdateDataForTable(List<string> updateTitles)
+        {
             Console.WriteLine("Attempting to collect data for " + updateTitles.Count + " updates...");
             int x = 0;
             foreach (string updateTitle in updateTitles) //For each update
             {
-                Console.WriteLine("Collecting data for update " + (x+1) + " of " + updateTitles.Count + ".");
+                Console.WriteLine("Collecting data for update " + (x + 1) + " of " + updateTitles.Count + ".");
 
                 Console.WriteLine("Title is: " + updateTitle);
-                
+
                 //If data exists in CSV file
                 if (QueryController.doesUpdateTitleExistInTable(TableBuilder.Table, updateTitle) == true)
                 {
@@ -67,21 +163,23 @@ namespace WUDownloader
                 {
                     string kb = updateTitle.Split('(', ')')[1];
                     HtmlDocument siteAsHtml = WebController.getSiteAsHTML(Configuration.CATALOG_URL + kb);
-                    t.populateTableFromSite(siteAsHtml, Configuration.TablePath);
+                    t.populateTableFromSite(siteAsHtml, Configuration.TablePath, Configuration.TableName);
                 }
                 x++;
             }
             Console.WriteLine("Data collection complete.");
-
+        }
+        private void StartDownloadManager(List<string> updateTitles)
+        {
             DownloadManager d = new DownloadManager();
             d.setOsList();
 
+            Console.WriteLine("Populating download queue...");
             d.populateDownloadQueue(updateTitles);
             Console.WriteLine("Queue loading complete...");
+            Console.WriteLine("Initializing download sequence...");
             d.downloadFilesFromQueue();
-
-            Console.WriteLine("Exiting...");
-            System.Console.ReadKey();
+            Console.WriteLine("Downloads complete.");
         }
     }
 }

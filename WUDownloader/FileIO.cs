@@ -14,19 +14,19 @@ namespace WUDownloader
             return lines;
         }
 
-        public static void ExportStringArrayToFile(string filepath, string[] lines)
+        public static void ExportStringListToFile(string filepath, List<string> lines)
         {
             System.IO.File.WriteAllLines(filepath, lines);
         }
 
         public static List<string> ImportCsvToStringList(string filepath)
         {
-            List<string> csv = System.IO.File.ReadAllLines(filepath).ToList();
+            List<string> csv = System.IO.File.ReadAllLines(filepath + ".csv").ToList();
             return csv;
         }
-        public static void ExportDataTableToCSV(DataTable table, string filePath)
+        public static void ExportDataTableToCSV(DataTable table, string folderPath, string fileName)
         {
-            using (StreamWriter writer = new StreamWriter(filePath + ".csv"))
+            using (StreamWriter writer = new StreamWriter(folderPath + "\\" + fileName + ".csv"))
             {
                 WriteDataTable(table, writer, true);
                 writer.Close();

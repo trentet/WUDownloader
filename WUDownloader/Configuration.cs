@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WUDownloader
 {
     class Configuration
     {
-        private static string configurationFilePath = "D:\\WUDownloader\\config.txt";
+        private static string configurationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WUDownloader";
+        private static string configurationFilePath = ConfigurationFolderPath + "\\config.txt";
+        private static string tableName = "UpdateCatalog";
+        
         //Download Manager non-constants
+        private static string rootPath;
         private static string downloadPath;
         private static string importPath;
         private static string tablePath;
@@ -26,6 +31,7 @@ namespace WUDownloader
         private static string download_dialog_url = "https://www.catalog.update.microsoft.com/DownloadDialog.aspx";
 
         //Download Manager constants
+        private static string rootPathPrefix = "rootPath=";
         private static string downloadPathPrefix = "downloadPath=";
         private static string importPathPrefix = "importPath=";
         private static string tablePathPrefix = "tablePath=";
@@ -58,12 +64,16 @@ namespace WUDownloader
         public static bool DownloadFor_server2012R2 { get => downloadFor_server2012R2; set => downloadFor_server2012R2 = value; }
         public static bool DownloadFor_server2016 { get => downloadFor_server2016; set => downloadFor_server2016 = value; }
         public static string ConfigurationFilePath { get => configurationFilePath; }
+        public static string RootPath { get => rootPath; set => rootPath = value; }
+        public static string TableName { get => tableName; }
+        public static string ConfigurationFolderPath { get => configurationFolderPath; }
 
         public static void setDefaultConfiguration()
         {
-            downloadPath = "D:\\WUDownloader\\Downloads";
-            importPath = "D:\\WUDownloader\\Import";
-            tablePath = "D:\\WUDownloader\\Table\\UpdateCatalog";
+            rootPath = "C:\\WUDownloader";
+            downloadPath = rootPath + "\\Downloads";
+            importPath = rootPath + "\\Import";
+            tablePath = rootPath + "\\Table";
             DownloadFor_xp = false;
             DownloadFor_vista = false;
             DownloadFor_seven = false;
@@ -76,43 +86,46 @@ namespace WUDownloader
             DownloadFor_server2012R2 = false;
             DownloadFor_server2016 = false;
         }
-        public static string[] getCurrentConfiguration()
+        public static List<string> getCurrentConfiguration()
         {
-            string[] configLines = new string[14];
-            configLines[0] = downloadPathPrefix + downloadPath;
-            configLines[1] = importPathPrefix + importPath;
-            configLines[2] = tablePathPrefix + tablePath;
-            configLines[3] = xpPrefix + DownloadFor_xp;
-            configLines[4] = vistaPrefix + DownloadFor_vista;
-            configLines[5] = sevenPrefix + DownloadFor_seven;
-            configLines[6] = eightPrefix + DownloadFor_eight;
-            configLines[7] = eightOnePrefix + DownloadFor_eightOne;
-            configLines[8] = tenPrefix + DownloadFor_ten;
-            configLines[9] = server2003Prefix + DownloadFor_server2003;
-            configLines[10] = server2008Prefix + DownloadFor_server2008;
-            configLines[11] = server2012Prefix + DownloadFor_server2012;
-            configLines[12] = server2012R2Prefix + DownloadFor_server2012R2;
-            configLines[13] = server2016Prefix + DownloadFor_server2016;
+            List<string> configLines = new List<string>();
+            configLines.Add(rootPathPrefix + RootPath);
+            configLines.Add(downloadPathPrefix + downloadPath);
+            configLines.Add(importPathPrefix + importPath);
+            configLines.Add(tablePathPrefix + tablePath);
+            configLines.Add(xpPrefix + DownloadFor_xp);
+            configLines.Add(vistaPrefix + DownloadFor_vista);
+            configLines.Add(sevenPrefix + DownloadFor_seven);
+            configLines.Add(eightPrefix + DownloadFor_eight);
+            configLines.Add(eightOnePrefix + DownloadFor_eightOne);
+            configLines.Add(tenPrefix + DownloadFor_ten);
+            configLines.Add(server2003Prefix + DownloadFor_server2003);
+            configLines.Add(server2008Prefix + DownloadFor_server2008);
+            configLines.Add(server2012Prefix + DownloadFor_server2012);
+            configLines.Add(server2012R2Prefix + DownloadFor_server2012R2);
+            configLines.Add(server2016Prefix + DownloadFor_server2016);
             return configLines;
         }
 
-        public static void setNewConfiguration(Object[] configLines)
+        public static void setNewConfiguration(List<Object> configLines)
         {
             setDefaultConfiguration();
-            downloadPath = configLines[0].ToString();
-            importPath = configLines[1].ToString();
-            tablePath = configLines[2].ToString();
-            DownloadFor_xp = (bool)configLines[3];
-            DownloadFor_vista = (bool)configLines[4];
-            DownloadFor_seven = (bool)configLines[5];
-            DownloadFor_eight = (bool)configLines[6];
-            DownloadFor_eightOne = (bool)configLines[7];
-            DownloadFor_ten = (bool)configLines[8];
-            DownloadFor_server2003 = (bool)configLines[9];
-            DownloadFor_server2008 = (bool)configLines[10];
-            DownloadFor_server2012 = (bool)configLines[11];
-            DownloadFor_server2012R2 = (bool)configLines[12];
-            DownloadFor_server2016 = (bool)configLines[13];
+            RootPath = configLines[0].ToString();
+            DownloadPath = configLines[1].ToString();
+            ImportPath = configLines[2].ToString();
+            TablePath = configLines[3].ToString();
+            DownloadFor_xp = (bool)configLines[4];
+            DownloadFor_vista = (bool)configLines[5];
+            DownloadFor_seven = (bool)configLines[6];
+            DownloadFor_eight = (bool)configLines[7];
+            DownloadFor_eightOne = (bool)configLines[8];
+            DownloadFor_ten = (bool)configLines[9];
+            DownloadFor_server2003 = (bool)configLines[10];
+            DownloadFor_server2008 = (bool)configLines[11];
+            DownloadFor_server2012 = (bool)configLines[12];
+            DownloadFor_server2012R2 = (bool)configLines[13];
+
+            DownloadFor_server2016 = (bool)configLines[14];
         }
     }
 }

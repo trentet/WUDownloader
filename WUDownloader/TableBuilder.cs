@@ -8,20 +8,20 @@ namespace WUDownloader
 {
     class TableBuilder
     {
-        private static DataSet dataset = new DataSet("UpdateCatalog");
+        private static DataSet dataset = new DataSet(Configuration.TableName);
         private static DataTable table;
-        private string tableName = "Update Catalog";
+        //private string tableName = "Update Catalog";
         private int columnCount;
 
         public static DataTable Table { get => table; set => table = value; }
         public static DataSet Dataset { get => dataset; set => dataset = value; }
-        public string TableName { get => tableName; set => tableName = value; }
+        //public string TableName { get => tableName; set => tableName = value; }
 
         public void buildTableSchema()
         {
             //Create DataSet, Update Catalog DataTable, Create DataColumns, and Add DataColumns to DataTable
 
-            table = Dataset.Tables.Add(tableName);
+            table = Dataset.Tables.Add(Configuration.TableName);
             DataColumn id = createColumn("System.String", "id", true, true);
             DataColumn title = createColumn("System.String", "title", false, false);
             DataColumn os = createColumn("System.String", "os", false, false);
@@ -51,13 +51,13 @@ namespace WUDownloader
             }
         }
 
-        public void populateTableFromSite(HtmlDocument siteAsHtml, string tablePath)
+        public void populateTableFromSite(HtmlDocument siteAsHtml, string tablePath, string fileName)
         {
             List<DataRow> typedDataRows = getTypedDataRowsFromHTML(siteAsHtml); //stores all DataRows from HtmlDocument
             foreach (DataRow datarow in typedDataRows) //Adds rows to table
             {
                 AddRowToTable(datarow);
-                FileIO.ExportDataTableToCSV(table, tablePath); //Saves table to CSV
+                FileIO.ExportDataTableToCSV(table, tablePath, fileName); //Saves table to CSV
             }
         }
 
@@ -96,7 +96,7 @@ namespace WUDownloader
                 columnNames.Add(column.ColumnName);
             }
 
-            DataRow newRow = dataset.Tables[tableName].NewRow();
+            DataRow newRow = dataset.Tables[Configuration.TableName].NewRow();
 
             for (int x = 0; x < cellData.Length; x++)
             {
@@ -108,7 +108,7 @@ namespace WUDownloader
         }
         private void AddRowToTable(DataRow row)
         {
-            dataset.Tables[tableName].Rows.Add(row);
+            dataset.Tables[Configuration.TableName].Rows.Add(row);
         }
         private Object[] assignTypesToData(Object[] data)
         {
