@@ -31,17 +31,17 @@ namespace WUDownloader
             {
                 if (x == osList.Count - 1)
                 {
-                    orPieces += "os Like '%" + osList[x] + "%'";
+                    orPieces += "product Like '%" + osList[x] + "%'";
                 }
                 else
                 {
-                    orPieces += "os Like '%" + osList[x] + "%' or ";
+                    orPieces += "product Like '%" + osList[x] + "%' or ";
                 }
             }
 
             // Presuming the DataTable has a column named Date.
             string expression = "title Like '%" + title + "%' and (" + orPieces + ")";
-            string sortOrder = "os, lastUpdated DESC";
+            string sortOrder = "product, lastUpdated DESC";
 
             // Use the Select method to find all rows matching the filter.
             DataRow[] foundRows = table.Select(expression, sortOrder);

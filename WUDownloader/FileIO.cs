@@ -41,7 +41,7 @@ namespace WUDownloader
                     .OfType<DataColumn>()
                     .Select(column => QuoteValue(column.ColumnName));
 
-                writer.WriteLine(String.Join(",", headerValues));
+                writer.WriteLine(String.Join("|", headerValues));
             }
 
             IEnumerable<String> items = null;
@@ -49,7 +49,7 @@ namespace WUDownloader
             foreach (DataRow row in sourceTable.Rows)
             {
                 items = row.ItemArray.Select(o => QuoteValue(o.ToString()));
-                writer.WriteLine(String.Join(",", items));
+                writer.WriteLine(String.Join("|", items));
             }
 
             writer.Flush();

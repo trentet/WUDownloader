@@ -8,13 +8,12 @@ namespace WUDownloader
     class Controller
     {
         TableBuilder t = new TableBuilder();
-        
         public void Run()
         {
             ConfigurationSetup();
             FolderStructureSetup();
-            
-            List<string> updateTitles = ImportUpdateTitles();
+
+            List<string> updateTitles = CollectUpdateTitles();
             if (updateTitles.Count > 0)
             {
                 SetupTable();
@@ -23,12 +22,41 @@ namespace WUDownloader
             }
             else
             {
-                Console.WriteLine("No updates found in Updates.txt.");
+                Console.WriteLine("No updates were found.");
             }
-            
 
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
+        }
+        private List<string> CollectUpdateTitles()
+        {
+            Console.WriteLine("Would you like to import update titles from file or scan current device?");
+            ConsoleInput c = new ConsoleInput();
+            int input = 0;
+            do
+            {
+                Console.WriteLine("\nEnter 1 for Import or 2 for Scan: ");
+                input = c.getUserInputInteger();
+            } while (input != 1 && input != 2);
+
+            List<string> updateTitles = new List<string>();
+            if (input == 1)
+            {
+                Console.WriteLine("\nYou have chosen to Import. Importing...");
+                updateTitles = ImportUpdateTitles();
+                return updateTitles;
+            }
+            else if (input == 2)
+            {
+                Console.WriteLine("\nYou have chosen to Scan. Scanning...");
+                updateTitles = WindowsUpdate.GetPendingUpdateTitles();
+                return updateTitles;
+            }
+            else
+            {
+                Console.WriteLine("Something went wrong. Input equals: '" + input + "'");
+                return updateTitles;
+            }
         }
         private void FolderStructureSetup()
         {

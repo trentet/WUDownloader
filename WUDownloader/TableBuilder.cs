@@ -24,14 +24,14 @@ namespace WUDownloader
             table = Dataset.Tables.Add(Configuration.TableName);
             DataColumn id = createColumn("System.String", "id", true, true);
             DataColumn title = createColumn("System.String", "title", false, false);
-            DataColumn os = createColumn("System.String", "os", false, false);
+            DataColumn product = createColumn("System.String", "product", false, false);
             DataColumn classification = createColumn("System.String", "classification", false, false);
             DataColumn lastUpdated = createColumn("System.DateTime", "lastUpdated", false, false);
             DataColumn version = createColumn("System.String", "version", false, false);
             DataColumn size = createColumn("System.String", "size", false, false);
             DataColumn downloadUrls = createColumn("System.String", "downloadUrls", false, false);
 
-            List<DataColumn> columns = new List<DataColumn>(new DataColumn[] { id, title, os, classification, lastUpdated, version, size, downloadUrls });
+            List<DataColumn> columns = new List<DataColumn>(new DataColumn[] { id, title, product, classification, lastUpdated, version, size, downloadUrls });
             table = addColumnsToTable(columns);
             columnCount = columns.Count();
         }
@@ -45,7 +45,7 @@ namespace WUDownloader
 
             for (int x = startIndex; x < csv.Count; x++)
             {
-                Object[] rowContent = csv[x].Replace("\",\"", "\"|\"").Replace("\"","").Split('|'); //Separates out each element in between quotes
+                Object[] rowContent = csv[x].Replace("\"","").Split('|'); //Separates out each element in between quotes
                 DataRow row = createDataRow(assignTypesToData(rowContent)); //creates DataRow with data types that match the table schema
                 table.Rows.Add(row);
             }
