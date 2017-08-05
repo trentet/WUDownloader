@@ -128,7 +128,6 @@ namespace WUDownloader
         {
             //All elements with tag of "td"
             HtmlElementCollection cellElements = siteAsHtml.GetElementsByTagName("td");
-            List<DataRow> datarows = new List<DataRow>();
             List<string> unparsedRow = new List<string>();
             foreach (HtmlElement elem in cellElements)
             {
@@ -142,6 +141,7 @@ namespace WUDownloader
             int numberOfColumnsNotParsedFromSite = 1;
             int numOfRows = unparsedRow.Count / (columnCount - numberOfColumnsNotParsedFromSite);
             Parser p = new Parser();
+            List<DataRow> datarows = new List<DataRow>();
             for (int x = 0; x < numOfRows; x++)
             {
                 cellData = Parser.parseHtmlRow(cellData.Length, unparsedRow, x);
@@ -149,6 +149,22 @@ namespace WUDownloader
                 datarows.Add(datarow);
             }
             return datarows;
+        }
+        public List<object> getAllDataFromColumn(string columnName)
+        {
+            int columnIndex = table.Columns[columnName].Ordinal;
+            List<object> listOfDataFromColumn = new List<object>(table.Rows.Count);
+            foreach (DataRow row in table.Rows)
+            {
+                listOfDataFromColumn.Add((object)row[columnIndex]);
+            }
+            return listOfDataFromColumn;
+        }
+        public Type getColumnType(string columnName)
+        {
+            //int columnIndex = table.Columns[columnName].Ordinal;
+            Type columnType = table.Columns[columnName].DataType;
+            return columnType;
         }
     }
 }

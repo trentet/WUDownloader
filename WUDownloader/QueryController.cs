@@ -5,12 +5,12 @@ namespace WUDownloader
 {
     class QueryController
     {
-        public static string getIDFromTable(DataTable table, string title, string os)
+        public static string getIDFromTable(DataTable table, string title, string product)
         {
             string tableName = table.TableName;
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title Like '%" + title + "%' and os Like '%" + os + "%'";
+            string expression = "title Like '%" + title + "%' and product Like '%" + product + "%'";
             string sortOrder = "lastUpdated DESC";
             
             // Use the Select method to find all rows matching the filter.
@@ -22,20 +22,20 @@ namespace WUDownloader
             return id;
         }
 
-        public static List<string>[] getDownloadUrlsFromTable(DataTable table, string title, List<string> osList)
+        public static List<string>[] getDownloadUrlsFromTable(DataTable table, string title, List<string> productList)
         {
             string tableName = table.TableName;
             string orPieces = "";
             
-            for(int x = 0; x < osList.Count; x++)
+            for(int x = 0; x < productList.Count; x++)
             {
-                if (x == osList.Count - 1)
+                if (x == productList.Count - 1)
                 {
-                    orPieces += "product Like '%" + osList[x] + "%'";
+                    orPieces += "product Like '%" + productList[x] + "%'";
                 }
                 else
                 {
-                    orPieces += "product Like '%" + osList[x] + "%' or ";
+                    orPieces += "product Like '%" + productList[x] + "%' or ";
                 }
             }
 
@@ -47,29 +47,30 @@ namespace WUDownloader
             DataRow[] foundRows = table.Select(expression, sortOrder);
             List<DataRow> prunedRows = new List<DataRow>();
 
-            List<string> osGrabbed = new List<string>();
+            List<string> productGrabbed = new List<string>();
+            int columnIndex = table.Columns["product"].Ordinal;
             for (int x = 0; x < foundRows.Length; x++)
             {
-                string currentRowOS = foundRows[x].ItemArray[2].ToString();
-                if (!osGrabbed.Contains(currentRowOS))
+                string currentRowProduct = foundRows[x].ItemArray[columnIndex].ToString();
+                if (!productGrabbed.Contains(currentRowProduct))
                 {
-                    osGrabbed.Add(currentRowOS);
+                    productGrabbed.Add(currentRowProduct);
                     prunedRows.Add(foundRows[x]);
                 }
             }
 
             //First row in foundRows, at the 7th column (downloadUrls)
-            List<string> oses = new List<string>();
+            List<string> products = new List<string>();
             List<string> downloadUrls = new List<string>();
             foreach (DataRow row in prunedRows)
             {
-                oses.Add(row.ItemArray[2].ToString());
+                products.Add(row.ItemArray[2].ToString());
                 downloadUrls.Add(row.ItemArray[7].ToString());
             }
 
-            List<string>[] oses_and_downloadUrls = new List<string>[] {oses, downloadUrls };
+            List<string>[] products_and_downloadUrls = new List<string>[] { products, downloadUrls };
 
-            return oses_and_downloadUrls;
+            return products_and_downloadUrls;
         }
 
         public static bool doesUpdateTitleExistInTable(DataTable table, string title)

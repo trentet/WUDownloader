@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections;
 
 namespace WUDownloader
 {
@@ -199,15 +200,42 @@ namespace WUDownloader
         }
         private void StartDownloadManager(List<string> updateTitles)
         {
-            DownloadManager d = new DownloadManager();
-            d.setOsList();
-
+            List<string> productList = getProductList();
+            DownloadManager d = new DownloadManager(productList);
+            
             Console.WriteLine("Populating download queue...");
             d.populateDownloadQueue(updateTitles);
             Console.WriteLine("Queue loading complete...");
             Console.WriteLine("Initializing download sequence...");
             d.downloadFilesFromQueue();
             Console.WriteLine("Downloads complete.");
+        }
+        public List<string> getProductList()
+        {
+
+
+            //Type columnType = t.getColumnType(columnName);
+            // Type listType = typeof(List<>).MakeGenericType(new[] { columnType });
+            //IList list = (IList)Activator.CreateInstance(listType);
+            string columnName = "product";
+            var productsFromTable = t.getAllDataFromColumn(columnName);
+            List<string> productList = new List<string>();
+            for (int x = 0; x < productsFromTable.Count; x++)
+            {
+                string productsAtCurrentRow = (string)productsFromTable[x];
+                string[] splitProducts = productsAtCurrentRow.Split(',');
+                foreach (string product in splitProducts)
+                {
+                    string trimmedProduct = product.Trim();
+                    if (!productList.Contains(trimmedProduct))
+                    {
+                        productList.Add(trimmedProduct);
+                    }
+                }
+                
+            }
+            
+            return productList;
         }
     }
 }
