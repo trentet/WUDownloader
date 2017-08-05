@@ -11,21 +11,6 @@ namespace WUDownloader
     
     class DownloadManager
     {
-        //private enum OperatingSystems
-        //{
-        //    [Description("Windows XP")] XP = 0,
-        //    [Description("Windows Vista")] VISTA = 1,
-        //    [Description("Windows 7")] SEVEN = 2,
-        //    [Description("Windows 8")] EIGHT = 3,
-        //    [Description("Windows 8.1")] EIGHT_ONE = 4,
-        //    [Description("Windows 10")] TEN = 5,
-        //    [Description("Windows Server 2003")] SERVER_2003 = 6,
-        //    [Description("Windows Server 2008")] SERVER_2008 = 7,
-        //    [Description("Windows Server 2012")] SERVER_2012 = 8,
-        //    [Description("Windows Server 2012 R2")] SERVER_2012_R2 = 9,
-        //    [Description("Windows Server 2016")] SERVER_2016 = 10
-
-        //}
         public DownloadManager(List<string> productList)
         {
             ProductList = productList;
@@ -86,15 +71,15 @@ namespace WUDownloader
                     }
                     else //File is not already downloaded. Download.
                     {
-                            //See if current os list contains an OS from the oslist from config, then create folders and download files
-                            if (productList.Contains(productList[y]))
-                            {
+                        //See if current os list contains an OS from the oslist from config, then create folders and download files
+                        if (productList.Contains(productList[y]))
+                        {
                             Console.WriteLine("Download Path: " + downloadFolderPath);
-                                Console.WriteLine("Downloading for " + productList[y]);
-                                System.IO.Directory.CreateDirectory(downloadFolderPath);
-                                DownloadWorker d = new DownloadWorker();
-                                d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
-                            }
+                            Console.WriteLine("Downloading for " + productList[y]);
+                            System.IO.Directory.CreateDirectory(downloadFolderPath);
+                            DownloadWorker d = new DownloadWorker();
+                            d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
+                        }
                     }
                 }
             }
@@ -120,80 +105,5 @@ namespace WUDownloader
                 }
             }
         }
-
-        //public void setOsList()
-        //{
-        //    if (osList.Count > 0)
-        //    {
-        //        osList.Clear();
-        //    }
-        //    if (Configuration.DownloadFor_xp)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.XP));
-        //    }
-        //    if (Configuration.DownloadFor_vista)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.VISTA));
-        //    }
-        //    if (Configuration.DownloadFor_seven)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SEVEN));
-        //    }
-        //    if (Configuration.DownloadFor_eight)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.EIGHT));
-        //    }
-        //    if (Configuration.DownloadFor_eightOne)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.EIGHT_ONE));
-        //    }
-        //    if (Configuration.DownloadFor_ten)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.TEN));
-        //    }
-        //    if (Configuration.DownloadFor_server2003)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SERVER_2003));
-        //    }
-        //    if (Configuration.DownloadFor_server2008)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SERVER_2008));
-        //    }
-        //    if (Configuration.DownloadFor_server2012)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SERVER_2012));
-        //    }
-        //    if (Configuration.DownloadFor_server2012R2)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SERVER_2012_R2));
-        //    }
-        //    if (Configuration.DownloadFor_server2016)
-        //    {
-        //        osList.Add(EnumExtensions.GetDescription(OperatingSystems.SERVER_2016));
-        //    }
-        //}
     }
-    //static class EnumExtensions
-    //{
-    //    public static string GetDescription(this Enum value)
-    //    {
-    //        Type type = value.GetType();
-    //        string name = Enum.GetName(type, value);
-    //        if (name != null)
-    //        {
-    //            FieldInfo field = type.GetField(name);
-    //            if (field != null)
-    //            {
-    //                DescriptionAttribute attr =
-    //                       Attribute.GetCustomAttribute(field,
-    //                         typeof(DescriptionAttribute)) as DescriptionAttribute;
-    //                if (attr != null)
-    //                {
-    //                    return attr.Description;
-    //                }
-    //            }
-    //        }
-    //        return null;
-    //    }
-    //}
 }

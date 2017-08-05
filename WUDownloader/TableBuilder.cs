@@ -100,8 +100,6 @@ namespace WUDownloader
 
             for (int x = 0; x < cellData.Length; x++)
             {
-                //Type columntype = cellData[x].GetType(); //gets
-                //var data = cellData[x];
                 newRow[columnNames[x]] = cellData[x];
             }
             return newRow;
@@ -162,7 +160,6 @@ namespace WUDownloader
         }
         public Type getColumnType(string columnName)
         {
-            //int columnIndex = table.Columns[columnName].Ordinal;
             Type columnType = table.Columns[columnName].DataType;
             return columnType;
         }

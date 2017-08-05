@@ -212,11 +212,6 @@ namespace WUDownloader
         }
         public List<string> getProductList()
         {
-
-
-            //Type columnType = t.getColumnType(columnName);
-            // Type listType = typeof(List<>).MakeGenericType(new[] { columnType });
-            //IList list = (IList)Activator.CreateInstance(listType);
             string columnName = "product";
             var productsFromTable = t.getAllDataFromColumn(columnName);
             List<string> productList = new List<string>();

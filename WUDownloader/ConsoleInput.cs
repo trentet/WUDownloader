@@ -39,9 +39,6 @@ namespace WUDownloader
             // Stops Receving Keys Once Enter is Pressed
             while (key.Key != ConsoleKey.Enter);
 
-            //Console.WriteLine();
-            //Console.WriteLine("The Value You entered is : " + _val);
-            //Console.ReadKey();
             int input = Int32.Parse(_val);
             return input;
         }
