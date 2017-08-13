@@ -61,7 +61,6 @@ namespace WUDownloader
         }
         private void FolderStructureSetup()
         {
-
             if (!Directory.Exists(Configuration.RootPath))
             {
                 Configuration.setDefaultConfiguration();
@@ -84,6 +83,15 @@ namespace WUDownloader
         }
         private void ConfigurationSetup()
         {
+            string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\","");
+            Console.WriteLine(executionPath);
+            if (File.Exists(executionPath + "\\" + "portable.txt"))
+            {
+                Configuration.IsPortable = true;
+                Configuration.ConfigurationFolderPath = executionPath;
+                //Configuration.ConfigurationFilePath = Configuration.ConfigurationFolderPath + "\\" + "config.txt";
+            }
+
             Console.WriteLine("Attempting to import configuration file at " + Configuration.ConfigurationFilePath);
             
             if (!Directory.Exists(Configuration.ConfigurationFolderPath)) //Config file is missing
@@ -93,6 +101,7 @@ namespace WUDownloader
             if (!File.Exists(Configuration.ConfigurationFilePath))
             {
                 Console.WriteLine("Configuration file does not exist. Recreating with default settings.");
+
                 Configuration.setDefaultConfiguration(); //sets default values
 
                 FileIO.ExportStringListToFile(Configuration.ConfigurationFilePath, Configuration.getCurrentConfiguration());

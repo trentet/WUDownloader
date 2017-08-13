@@ -26,7 +26,6 @@ namespace WUDownloader
             //UpdateDownloader downloader = uSession.CreateUpdateDownloader();
             //downloader.Updates = uResult.Updates;
             //downloader.Download();
-
         }
     }
 }

@@ -35,6 +35,18 @@ namespace WUDownloader
             table = addColumnsToTable(columns);
             columnCount = columns.Count();
         }
+        public void exportTableSchemaToFile(DataTable table)
+        {
+            List<string> lines = new List<string>();
+            foreach (DataColumn column in table.Columns)
+            {
+                lines.Add("DataType=" + column.DataType.ToString());
+                lines.Add("ColumnName=" + column.ColumnName.ToString());
+                lines.Add("ReadOnly=" + column.ReadOnly.ToString());
+                lines.Add("Unique=" + column.Unique.ToString());
+                
+            }
+        }
         public void populateTableFromCsv(List<string> csv, bool hasHeaders)
         {
             int startIndex = 0;

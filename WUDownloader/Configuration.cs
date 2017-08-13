@@ -5,8 +5,9 @@ namespace WUDownloader
 {
     class Configuration
     {
+        private static bool isPortable = false;
         private static string configurationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WUDownloader";
-        private static string configurationFilePath = ConfigurationFolderPath + "\\config.txt";
+        private static string configurationFilePath;
         private static string tableName = "UpdateCatalog";
         
         //Download Manager non-constants
@@ -30,21 +31,30 @@ namespace WUDownloader
         public static string ImportPath { get => importPath; set => importPath = value; }
         public static string TablePath { get => tablePath; set => tablePath = value; }
         public static string Download_dialog_url { get => download_dialog_url; set => download_dialog_url = value; }
-        public static string ConfigurationFilePath { get => configurationFilePath; }
         public static string RootPath { get => rootPath; set => rootPath = value; }
         public static string TableName { get => tableName; }
-        public static string ConfigurationFolderPath { get => configurationFolderPath; }
+        public static string ConfigurationFolderPath { get => configurationFolderPath; set { configurationFolderPath = value; ConfigurationFilePath = configurationFolderPath + "\\config.txt"; } }
+        public static string ConfigurationFilePath { get => configurationFilePath; set => configurationFilePath = value; }
         public static string RootPathPrefix { get => rootPathPrefix; set => rootPathPrefix = value; }
         public static string DownloadPathPrefix { get => downloadPathPrefix; set => downloadPathPrefix = value; }
         public static string ImportPathPrefix { get => importPathPrefix; set => importPathPrefix = value; }
         public static string TablePathPrefix { get => tablePathPrefix; set => tablePathPrefix = value; }
+        public static bool IsPortable { get => isPortable; set => isPortable = value; }
 
         public static void setDefaultConfiguration()
         {
-            rootPath = "C:\\WUDownloader";
-            downloadPath = rootPath + "\\Downloads";
-            importPath = rootPath + "\\Import";
-            tablePath = rootPath + "\\Table";
+            if (isPortable)
+            {
+                string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
+                RootPath = executionPath;
+            }
+            else
+            {
+                RootPath = "C:\\WUDownloader";
+            }
+            DownloadPath = rootPath + "\\Downloads";
+            ImportPath = rootPath + "\\Import";
+            TablePath = rootPath + "\\Table";
         }
         public static List<string> getCurrentConfiguration()
         {
