@@ -63,22 +63,34 @@ namespace WUDownloader
         {
             if (!Directory.Exists(Configuration.RootPath))
             {
-                Configuration.setDefaultConfiguration();
+                //Configuration.setDefaultConfiguration();
                 Console.WriteLine("WUDownload folder structure is missing. Reconstructing using configuration settings...");
-                Configuration.setDefaultConfiguration();
+                //Configuration.setDefaultConfiguration();
                 Directory.CreateDirectory(Configuration.RootPath);
-                Directory.CreateDirectory(Configuration.DownloadPath);
-                Directory.CreateDirectory(Configuration.ImportPath);
-                Directory.CreateDirectory(Configuration.TablePath);
-                if (Directory.Exists(Configuration.RootPath) && Directory.Exists(Configuration.DownloadPath) &&
+            }
+            if (Directory.Exists(Configuration.RootPath))
+            {
+                if (!Directory.Exists(Configuration.DownloadPath))
+                {
+                    Directory.CreateDirectory(Configuration.DownloadPath);
+                }
+                if (!Directory.Exists(Configuration.ImportPath))
+                {
+                    Directory.CreateDirectory(Configuration.ImportPath);
+                }
+                if (!Directory.Exists(Configuration.TablePath))
+                {
+                    Directory.CreateDirectory(Configuration.TablePath);
+                }
+            }
+            if (Directory.Exists(Configuration.RootPath) && Directory.Exists(Configuration.DownloadPath) &&
                     Directory.Exists(Configuration.ImportPath) && Directory.Exists(Configuration.TablePath))
-                {
-                    Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootPath);
-                }
-                else
-                {
-                    Console.WriteLine("Folder creation failed. Attempted root folder creation at: " + Configuration.RootPath);
-                }
+            {
+                Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootPath);
+            }
+            else
+            {
+                Console.WriteLine("Folder creation failed. Attempted root folder creation at: " + Configuration.RootPath);
             }
         }
         private void ConfigurationSetup()
