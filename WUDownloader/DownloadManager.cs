@@ -90,19 +90,19 @@ namespace WUDownloader
             {
                 string kb = title.Split('(', ')')[1];
                 //gets all download URLs for update at current index
-                List<string>[] products_and_downloadUrls = QueryController.getDownloadUrlsFromTable(TableBuilder.Table, title, productList);
-                List<string> productsFromEachRow = products_and_downloadUrls[0];
-                List<string> downloadUrlsFromEachRow = products_and_downloadUrls[1];
-                for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
-                {
-                    string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
-                    string product = productsFromEachRow[x];
-                    foreach (string downloadUrl in downloadUrls)
-                    {
-                        DownloadItem downloadItem = new DownloadItem(title, kb, product, downloadUrl);
-                        addDownloadItemToQueue(downloadItem);
-                    }
-                }
+                //List<string>[] products_and_downloadUrls = QueryController.getDownloadUrlsFromTable(TableBuilder.Table, title, productList);
+                //List<string> productsFromEachRow = products_and_downloadUrls[0];
+                //List<string> downloadUrlsFromEachRow = products_and_downloadUrls[1];
+                //for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
+                //{
+                //    string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
+                //    string product = productsFromEachRow[x];
+                //    foreach (string downloadUrl in downloadUrls)
+                //    {
+                //        DownloadItem downloadItem = new DownloadItem(title, kb, product, downloadUrl);
+                //        addDownloadItemToQueue(downloadItem);
+                //    }
+                //}
             }
         }
     }

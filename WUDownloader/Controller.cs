@@ -31,7 +31,7 @@ namespace WUDownloader
             }
             else if (menuSelection == 2) //Download Updates
             {
-                StartDownloadManager(updateTitles);
+               // StartDownloadManager(updateTitles);
             }
             else if (menuSelection == 3) // Collect update information and download updates
             {
@@ -213,16 +213,16 @@ namespace WUDownloader
                 List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
 
                 //Build table with schema
-                DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, );
+                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, );
                 //Populate table from file
-                t.populateTableFromCsv(csv, true);
+                //t.populateTableFromCsv(csv, true);
             }
             else //If not exists
             {
                 Console.WriteLine("CSV file does not exists. Generating...");
                 //Build table from scratch
-                t.buildTableSchema();
-                FileIO.ExportDataTableToCSV(TableBuilder.Table, Configuration.TablePath, Configuration.TableName);
+                //t.buildTableSchema();
+                //FileIO.ExportDataTableToCSV(TableBuilder.Table, Configuration.TablePath, Configuration.TableName);
                 Console.WriteLine("CSV file saved.");
             }
         }
@@ -237,16 +237,16 @@ namespace WUDownloader
                 Console.WriteLine("Title is: " + updateTitle);
 
                 //If data exists in CSV file
-                if (QueryController.doesUpdateTitleExistInTable(TableBuilder.Table, updateTitle) == true)
-                {
-                    Console.WriteLine("Update data already exists in table. Skipping...");
-                }
-                else //Data doesn't exist in CSV file, so collect it and populate the table
-                {
-                    string kb = updateTitle.Split('(', ')')[1];
-                    HtmlDocument siteAsHtml = WebController.getSiteAsHTML(Configuration.CATALOG_URL + kb);
-                    t.populateTableFromSite(siteAsHtml, Configuration.TablePath, Configuration.TableName);
-                }
+                //if (QueryController.doesUpdateTitleExistInTable(TableBuilder.Table, updateTitle) == true)
+                //{
+                //    Console.WriteLine("Update data already exists in table. Skipping...");
+                //}
+                //else //Data doesn't exist in CSV file, so collect it and populate the table
+                //{
+                //    string kb = updateTitle.Split('(', ')')[1];
+                //    HtmlDocument siteAsHtml = WebController.getSiteAsHTML(Configuration.CATALOG_URL + kb);
+                //    t.populateTableFromSite(siteAsHtml, Configuration.TablePath, Configuration.TableName);
+                //}
                 x++;
             }
             Console.WriteLine("Data collection complete.");
@@ -265,23 +265,23 @@ namespace WUDownloader
         }
         public List<string> getProductList()
         {
-            string columnName = "product";
-            var productsFromTable = t.getAllDataFromColumn(columnName);
+            //string columnName = "product";
+            //var productsFromTable = t.getAllDataFromColumn(columnName);
             List<string> productList = new List<string>();
-            for (int x = 0; x < productsFromTable.Count; x++)
-            {
-                string productsAtCurrentRow = (string)productsFromTable[x];
-                string[] splitProducts = productsAtCurrentRow.Split(',');
-                foreach (string product in splitProducts)
-                {
-                    string trimmedProduct = product.Trim();
-                    if (!productList.Contains(trimmedProduct))
-                    {
-                        productList.Add(trimmedProduct);
-                    }
-                }
+            //for (int x = 0; x < productsFromTable.Count; x++)
+            //{
+            //    string productsAtCurrentRow = (string)productsFromTable[x];
+            //    string[] splitProducts = productsAtCurrentRow.Split(',');
+            //    foreach (string product in splitProducts)
+            //    {
+            //        string trimmedProduct = product.Trim();
+            //        if (!productList.Contains(trimmedProduct))
+            //        {
+            //            productList.Add(trimmedProduct);
+            //        }
+            //    }
                 
-            }
+            //}
             
             return productList;
         }

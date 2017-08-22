@@ -14,9 +14,9 @@ namespace WUDownloader
         public string TableName { get => tableName; set => tableName = value; }
         public Dictionary<string, Type> Dictionary { get => dictionary; set => dictionary = value; }
 
-        public Schema(string tableName, )
-        {
+        //public Schema(string tableName, )
+        //{
 
-        }
+        //}
     }
 }
