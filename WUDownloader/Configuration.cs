@@ -9,6 +9,7 @@ namespace WUDownloader
         private static string configurationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WUDownloader";
         private static string configurationFilePath;
         private static string tableName = "UpdateCatalog";
+        private static Dictionary<string, Type> schemaDictionary = new Dictionary<string, Type>();
         
         //Download Manager non-constants
         private static string rootPath;
@@ -16,16 +17,16 @@ namespace WUDownloader
         private static string importPath;
         private static string tablePath;
 
-        //WebController constants
-        private static string catalog_url = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
-        private static string download_dialog_url = "https://www.catalog.update.microsoft.com/DownloadDialog.aspx";
-
         //Download Manager constants
         private static string rootPathPrefix = "rootPath=";
         private static string downloadPathPrefix = "downloadPath=";
         private static string importPathPrefix = "importPath=";
         private static string tablePathPrefix = "tablePath=";
-        
+
+        //WebController constants
+        private static string catalog_url = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
+        private static string download_dialog_url = "https://www.catalog.update.microsoft.com/DownloadDialog.aspx";
+
         public static string CATALOG_URL { get => catalog_url; }
         public static string DownloadPath { get => downloadPath; set => downloadPath = value; }
         public static string ImportPath { get => importPath; set => importPath = value; }
@@ -40,6 +41,7 @@ namespace WUDownloader
         public static string ImportPathPrefix { get => importPathPrefix; set => importPathPrefix = value; }
         public static string TablePathPrefix { get => tablePathPrefix; set => tablePathPrefix = value; }
         public static bool IsPortable { get => isPortable; set => isPortable = value; }
+        public static Dictionary<string, Type> SchemaDictionary { get => schemaDictionary; set => schemaDictionary = value; }
 
         public static void setDefaultConfiguration()
         {

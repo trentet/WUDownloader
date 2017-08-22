@@ -3,31 +3,65 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
+using System.Data;
 
 namespace WUDownloader
 {
     class Controller
     {
-        TableBuilder t = new TableBuilder();
         public void Run()
         {
             ConfigurationSetup();
             FolderStructureSetup();
+            int menuSelection = selectMode();
 
-            List<string> updateTitles = CollectUpdateTitles();
-            if (updateTitles.Count > 0)
+            if (menuSelection == 1) //Collect update information
             {
-                SetupTable();
-                CollectUpdateDataForTable(updateTitles);
+                List<string> updateTitles = CollectUpdateTitles();
+                if (updateTitles.Count > 0)
+                {
+                    SetupTable();
+                    CollectUpdateDataForTable(updateTitles);
+                    
+                }
+                else
+                {
+                    Console.WriteLine("No updates were found.");
+                }
+            }
+            else if (menuSelection == 2) //Download Updates
+            {
                 StartDownloadManager(updateTitles);
             }
-            else
+            else if (menuSelection == 3) // Collect update information and download updates
             {
-                Console.WriteLine("No updates were found.");
+
             }
+
+
+            
 
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
+        }
+        public int selectMode()
+        {
+            Console.WriteLine("Select an option below:");
+            Console.WriteLine("1. Collect Update Information");
+            Console.WriteLine("2. Download Updates");
+            Console.WriteLine("3. Collect Update Information & Download Updates");
+
+            ConsoleInput c = new ConsoleInput();
+            int input = 0;
+            while (input < 1 || input > 3)
+            {
+                input = c.getUserInputInteger();
+                if (input < 1 || input > 3)
+                {
+                    Console.WriteLine("Incorrect selection. Please try again.");
+                }
+            }
+            return input;
         }
         private List<string> CollectUpdateTitles()
         {
@@ -63,9 +97,7 @@ namespace WUDownloader
         {
             if (!Directory.Exists(Configuration.RootPath))
             {
-                //Configuration.setDefaultConfiguration();
                 Console.WriteLine("WUDownload folder structure is missing. Reconstructing using configuration settings...");
-                //Configuration.setDefaultConfiguration();
                 Directory.CreateDirectory(Configuration.RootPath);
             }
             if (Directory.Exists(Configuration.RootPath))
@@ -96,7 +128,7 @@ namespace WUDownloader
         private void ConfigurationSetup()
         {
             string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\","");
-            Console.WriteLine(executionPath);
+            //Console.WriteLine(executionPath);
             if (File.Exists(executionPath + "\\" + "portable.txt"))
             {
                 Configuration.IsPortable = true;
@@ -181,7 +213,7 @@ namespace WUDownloader
                 List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
 
                 //Build table with schema
-                t.buildTableSchema();
+                DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, );
                 //Populate table from file
                 t.populateTableFromCsv(csv, true);
             }

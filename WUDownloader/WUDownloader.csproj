@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Schema.cs" />
     <Compile Include="ConsoleInput.cs" />
     <Compile Include="WindowsUpdate.cs" />
     <Compile Include="Configuration.cs" />

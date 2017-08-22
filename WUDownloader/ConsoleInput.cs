@@ -11,7 +11,7 @@ namespace WUDownloader
         public int getUserInputInteger()
         {
             string _val = "";
-            Console.Write("Enter your value: ");
+            Console.Write("Enter your selection: ");
             ConsoleKeyInfo key;
 
             do
