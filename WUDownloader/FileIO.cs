@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using TableBuilderLibrary;
 
 namespace WUDownloader
 {
@@ -24,6 +25,36 @@ namespace WUDownloader
             List<string> csv = System.IO.File.ReadAllLines(filepath + ".csv").ToList();
             return csv;
         }
+
+        public static DataTable ImportTableFromCsv()
+        {
+            //Build table with schema
+            DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes);
+            //Check if file exists
+            if (File.Exists(Configuration.TableFolderPath + "\\" + Configuration.TableName + ".csv")) //If exists
+            {
+                Console.WriteLine("CSV file exists. Importing...");
+                //Import file
+                //List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
+
+                ////Build table with schema
+                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes);
+
+                //Populate table from file
+                table.PopulateTableFromCsv(Configuration.TableFolderPath, Configuration.TableName, '|', true);
+                return table;
+            }
+            else //If not exists
+            {
+                Console.WriteLine("CSV file does not exists. Generating...");
+                //Build table from scratch
+                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, headers, columnTypes);
+                ExportDataTableToCSV(table, Configuration.TableFolderPath, Configuration.TableName);
+                Console.WriteLine("CSV file saved.");
+                return table;
+            }
+        }
+
         public static void ExportDataTableToCSV(DataTable table, string folderPath, string fileName)
         {
             using (StreamWriter writer = new StreamWriter(folderPath + "\\" + fileName + ".csv"))

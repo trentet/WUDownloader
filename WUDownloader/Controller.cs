@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections;
 using System.Data;
+using TableBuilderLibrary;
 
 namespace WUDownloader
 {
@@ -15,34 +16,40 @@ namespace WUDownloader
             FolderStructureSetup();
             int menuSelection = selectMode();
 
-            if (menuSelection == 1) //Collect update information
+            List<string> updateTitles = CollectUpdateTitles();
+            if (menuSelection == 1 || menuSelection == 3) //Collect update information
             {
-                List<string> updateTitles = CollectUpdateTitles();
-                if (updateTitles.Count > 0)
-                {
-                    SetupTable();
-                    CollectUpdateDataForTable(updateTitles);
-                    
-                }
-                else
-                {
-                    Console.WriteLine("No updates were found.");
-                }
+                CollectInfoForTable(updateTitles);
             }
-            else if (menuSelection == 2) //Download Updates
+            if (menuSelection == 2 || menuSelection == 3) //Download Updates
             {
-               // StartDownloadManager(updateTitles);
+                DataTable table = FileIO.ImportTableFromCsv();
+                StartDownloadManager(updateTitles, table);
             }
-            else if (menuSelection == 3) // Collect update information and download updates
-            {
-
-            }
+            //else if (menuSelection == 3) // Collect update information and download updates
+            //{
+            //    List<string> updateTitles = CollectUpdateTitles();
+            //    StartDownloadManager(updateTitles);
+            //}
 
 
             
 
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
+        }
+
+        public List<string> CollectInfoForTable(List<string> updateTitles)
+        {
+            if (updateTitles.Count > 0)
+            {
+                CollectUpdateDataForTable(updateTitles, FileIO.ImportTableFromCsv());
+            }
+            else
+            {
+                Console.WriteLine("No updates were found.");
+            }
+            return updateTitles;
         }
         public int selectMode()
         {
@@ -61,6 +68,7 @@ namespace WUDownloader
                     Console.WriteLine("Incorrect selection. Please try again.");
                 }
             }
+            Console.WriteLine("");
             return input;
         }
         private List<string> CollectUpdateTitles()
@@ -95,34 +103,34 @@ namespace WUDownloader
         }
         private void FolderStructureSetup()
         {
-            if (!Directory.Exists(Configuration.RootPath))
+            if (!Directory.Exists(Configuration.RootFolderPath))
             {
                 Console.WriteLine("WUDownload folder structure is missing. Reconstructing using configuration settings...");
-                Directory.CreateDirectory(Configuration.RootPath);
+                Directory.CreateDirectory(Configuration.RootFolderPath);
             }
-            if (Directory.Exists(Configuration.RootPath))
+            if (Directory.Exists(Configuration.RootFolderPath))
             {
-                if (!Directory.Exists(Configuration.DownloadPath))
+                if (!Directory.Exists(Configuration.DownloadFolderPath))
                 {
-                    Directory.CreateDirectory(Configuration.DownloadPath);
+                    Directory.CreateDirectory(Configuration.DownloadFolderPath);
                 }
-                if (!Directory.Exists(Configuration.ImportPath))
+                if (!Directory.Exists(Configuration.ImportFolderPath))
                 {
-                    Directory.CreateDirectory(Configuration.ImportPath);
+                    Directory.CreateDirectory(Configuration.ImportFolderPath);
                 }
-                if (!Directory.Exists(Configuration.TablePath))
+                if (!Directory.Exists(Configuration.TableFolderPath))
                 {
-                    Directory.CreateDirectory(Configuration.TablePath);
+                    Directory.CreateDirectory(Configuration.TableFolderPath);
                 }
             }
-            if (Directory.Exists(Configuration.RootPath) && Directory.Exists(Configuration.DownloadPath) &&
-                    Directory.Exists(Configuration.ImportPath) && Directory.Exists(Configuration.TablePath))
+            if (Directory.Exists(Configuration.RootFolderPath) && Directory.Exists(Configuration.DownloadFolderPath) &&
+                    Directory.Exists(Configuration.ImportFolderPath) && Directory.Exists(Configuration.TableFolderPath))
             {
-                Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootPath);
+                Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootFolderPath);
             }
             else
             {
-                Console.WriteLine("Folder creation failed. Attempted root folder creation at: " + Configuration.RootPath);
+                Console.WriteLine("Folder creation failed. Attempted root folder creation at: " + Configuration.RootFolderPath);
             }
         }
         private void ConfigurationSetup()
@@ -135,6 +143,8 @@ namespace WUDownloader
                 Configuration.ConfigurationFolderPath = executionPath;
                 //Configuration.ConfigurationFilePath = Configuration.ConfigurationFolderPath + "\\" + "config.txt";
             }
+
+            Configuration.setDefaultConfiguration(); //sets default values
 
             Console.WriteLine("Attempting to import configuration file at " + Configuration.ConfigurationFilePath);
             
@@ -162,7 +172,7 @@ namespace WUDownloader
             {
                 Console.WriteLine("Configuration file detected. Importing...");
                 List<string> configLines = FileIO.ImportFileToStringList(Configuration.ConfigurationFilePath);
-                List<Object> configValues = Parser.parseConfigFile(configLines);
+                List<Object> configValues = Parser.ParseConfigFile(configLines);
                 Configuration.setNewConfiguration(configValues);
                 Console.WriteLine("Configuration settings imported.");
             }
@@ -170,7 +180,7 @@ namespace WUDownloader
 
         private List<string> ImportUpdateTitles()
         {
-            string updatesFilePath = Configuration.ImportPath + "\\Updates.txt";
+            string updatesFilePath = Configuration.ImportFolderPath + "\\Updates.txt";
             List<string> updateTitles = new List<string>();
             Console.WriteLine("Importing update title list from file: " + updatesFilePath);
 
@@ -203,30 +213,8 @@ namespace WUDownloader
             
             return updateTitles;
         }
-        private void SetupTable()
-        {
-            //Check if file exists
-            if (File.Exists(Configuration.TablePath + "\\" + Configuration.TableName + ".csv")) //If exists
-            {
-                Console.WriteLine("CSV file exists. Importing...");
-                //Import file
-                List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
-
-                //Build table with schema
-                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, );
-                //Populate table from file
-                //t.populateTableFromCsv(csv, true);
-            }
-            else //If not exists
-            {
-                Console.WriteLine("CSV file does not exists. Generating...");
-                //Build table from scratch
-                //t.buildTableSchema();
-                //FileIO.ExportDataTableToCSV(TableBuilder.Table, Configuration.TablePath, Configuration.TableName);
-                Console.WriteLine("CSV file saved.");
-            }
-        }
-        private void CollectUpdateDataForTable(List<string> updateTitles)
+        
+        private void CollectUpdateDataForTable(List<string> updateTitles, DataTable table)
         {
             Console.WriteLine("Attempting to collect data for " + updateTitles.Count + " updates...");
             int x = 0;
@@ -237,52 +225,56 @@ namespace WUDownloader
                 Console.WriteLine("Title is: " + updateTitle);
 
                 //If data exists in CSV file
-                //if (QueryController.doesUpdateTitleExistInTable(TableBuilder.Table, updateTitle) == true)
-                //{
-                //    Console.WriteLine("Update data already exists in table. Skipping...");
-                //}
-                //else //Data doesn't exist in CSV file, so collect it and populate the table
-                //{
-                //    string kb = updateTitle.Split('(', ')')[1];
-                //    HtmlDocument siteAsHtml = WebController.getSiteAsHTML(Configuration.CATALOG_URL + kb);
-                //    t.populateTableFromSite(siteAsHtml, Configuration.TablePath, Configuration.TableName);
-                //}
+                if (QueryController.doesUpdateTitleExistInTable(table, updateTitle) == true)
+                {
+                    Console.WriteLine("Update data already exists in table. Skipping...");
+                }
+                else //Data doesn't exist in CSV file, so collect it and populate the table
+                {
+                    string kb = Parser.GetKbFromTitle(updateTitle);
+
+                    if (kb.Length > 0)
+                    {
+                        HtmlDocument siteAsHtml = WebController.getSiteAsHTML(Configuration.CATALOG_URL + kb);
+                        table.PopulateTableFromSite(siteAsHtml, Configuration.TableFolderPath, Configuration.TableName);
+                    }
+                }
                 x++;
             }
             Console.WriteLine("Data collection complete.");
         }
-        private void StartDownloadManager(List<string> updateTitles)
+        private void StartDownloadManager(List<string> updateTitles, DataTable table)
         {
-            List<string> productList = getProductList();
+            List<string> productList = GetProductList(table);
             DownloadManager d = new DownloadManager(productList);
             
             Console.WriteLine("Populating download queue...");
-            d.populateDownloadQueue(updateTitles);
+            d.PopulateDownloadQueue(updateTitles, table);
             Console.WriteLine("Queue loading complete...");
             Console.WriteLine("Initializing download sequence...");
             d.downloadFilesFromQueue();
             Console.WriteLine("Downloads complete.");
         }
-        public List<string> getProductList()
+        public List<string> GetProductList(DataTable table)
         {
-            //string columnName = "product";
-            //var productsFromTable = t.getAllDataFromColumn(columnName);
+            string columnName = "product";
+            var productsFromTable = TableBuilder.GetAllDataFromColumn(table, columnName);
             List<string> productList = new List<string>();
-            //for (int x = 0; x < productsFromTable.Count; x++)
-            //{
-            //    string productsAtCurrentRow = (string)productsFromTable[x];
-            //    string[] splitProducts = productsAtCurrentRow.Split(',');
-            //    foreach (string product in splitProducts)
-            //    {
-            //        string trimmedProduct = product.Trim();
-            //        if (!productList.Contains(trimmedProduct))
-            //        {
-            //            productList.Add(trimmedProduct);
-            //        }
-            //    }
-                
-            //}
-            
+            for (int x = 0; x < productsFromTable.Count; x++)
+            {
+                string productsAtCurrentRow = (string)productsFromTable[x];
+                string[] splitProducts = productsAtCurrentRow.Split(',');
+                foreach (string product in splitProducts)
+                {
+                    string trimmedProduct = product.Trim();
+                    if (!productList.Contains(trimmedProduct))
+                    {
+                        productList.Add(trimmedProduct);
+                    }
+                }
+
+            }
+
             return productList;
         }
     }

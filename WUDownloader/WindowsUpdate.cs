@@ -14,9 +14,9 @@ namespace WUDownloader
         {
             UpdateSession uSession = new UpdateSession();
             IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-            ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type = 'Software'");
+            ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type = 'Software'");//"IsInstalled=1");// and Type = 'Software'");
 
-            List<string> updateTitles = new List<string>();
+            List <string> updateTitles = new List<string>();
             foreach (IUpdate update in uResult.Updates)
             {
                 updateTitles.Add(update.Title);

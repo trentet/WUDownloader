@@ -1,10 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Windows.Forms;
+using TableBuilderLibrary;
 
 namespace WUDownloader
 {
-    class Parser
+    static class Parser
     {
+        public static string GetKbFromTitle(string title)
+        {
+            string kb = "";
+            if (title.Contains("(KB"))
+            {
+                kb = title.Split('(', ')')[1];
+            }
+            else
+            {
+                Console.WriteLine("Unable to find KB value in update title: " + title);
+                Console.WriteLine("Update will be ignored.");
+            }
+            return kb;
+        }
+        public static  List<DataRow> GetTypedDataRowsFromHTML(DataTable table, HtmlDocument siteAsHtml)
+        {
+            //All elements with tag of "td"
+            HtmlElementCollection cellElements = siteAsHtml.GetElementsByTagName("td");
+            List<string> unparsedRow = new List<string>();
+            foreach (HtmlElement elem in cellElements)
+            {
+                if (elem.GetAttribute("className").Contains("resultsbottomBorder") && !elem.GetAttribute("className").Contains("resultsIconWidth")) //excludes empty column
+                {
+                    string line = elem.InnerHtml;
+                    unparsedRow.Add(line);
+                }
+            }
+            Object[] cellData = new Object[table.Columns.Count];
+            int numberOfColumnsNotParsedFromSite = 1;
+            int numOfRows = unparsedRow.Count / (table.Columns.Count - numberOfColumnsNotParsedFromSite);
+            
+            List<DataRow> datarows = new List<DataRow>();
+            for (int x = 0; x < numOfRows; x++)
+            {
+                cellData = ParseHtmlRow(cellData.Length, unparsedRow, x);
+                DataRow datarow = TableBuilder.CreateDataRow(table, TableBuilder.AssignTypesToData(table, cellData));
+                datarows.Add(datarow);
+            }
+            return datarows;
+        }
         public static List<string> ParseLinesContaining(List<string> lines, string searchParam)
         {
             //Returns only lines containing the search parameter
@@ -20,7 +63,7 @@ namespace WUDownloader
             return parsedLines;
         }
 
-        public static string[] parseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
+        public static string[] ParseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
         {
             string[] rowData = new string[columnCount];
             int indexOffset = (rowIndex * 7);
@@ -45,7 +88,7 @@ namespace WUDownloader
             return rowData;
         }
 
-        public static List<Object> parseConfigFile(List<string> lines)
+        public static List<Object> ParseConfigFile(List<string> lines)
         {
             string rootPath = "";
             string downloadPath = "";

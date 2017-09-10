@@ -55,7 +55,7 @@ namespace WUDownloader
                 }
                 for (int y = 0; y < productList.Length; y++)
                 {
-                    string downloadFolderPath = Configuration.DownloadPath + "\\" + productList[y] + "\\" + SortedDownloadQueue[x].Title;
+                    string downloadFolderPath = Configuration.DownloadFolderPath + "\\" + productList[y] + "\\" + SortedDownloadQueue[x].Title;
                     string fullFilePath = downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath);
                     if (fullFilePath.Length > 260)
                     {
@@ -84,25 +84,29 @@ namespace WUDownloader
                 }
             }
         }
-        public void populateDownloadQueue(List<string> updateTitles)
+        public void PopulateDownloadQueue(List<string> updateTitles, DataTable table)
         {
             foreach (string title in updateTitles) //For each update
             {
-                string kb = title.Split('(', ')')[1];
-                //gets all download URLs for update at current index
-                //List<string>[] products_and_downloadUrls = QueryController.getDownloadUrlsFromTable(TableBuilder.Table, title, productList);
-                //List<string> productsFromEachRow = products_and_downloadUrls[0];
-                //List<string> downloadUrlsFromEachRow = products_and_downloadUrls[1];
-                //for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
-                //{
-                //    string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
-                //    string product = productsFromEachRow[x];
-                //    foreach (string downloadUrl in downloadUrls)
-                //    {
-                //        DownloadItem downloadItem = new DownloadItem(title, kb, product, downloadUrl);
-                //        addDownloadItemToQueue(downloadItem);
-                //    }
-                //}
+                string kb = Parser.GetKbFromTitle(title);
+
+                if (kb.Length > 0)
+                {
+                    //gets all download URLs for update at current index
+                    List<string>[] products_and_downloadUrls = QueryController.getDownloadUrlsFromTable(table, title, productList);
+                    List<string> productsFromEachRow = products_and_downloadUrls[0];
+                    List<string> downloadUrlsFromEachRow = products_and_downloadUrls[1];
+                    for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
+                    {
+                        string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
+                        string product = productsFromEachRow[x];
+                        foreach (string downloadUrl in downloadUrls)
+                        {
+                            DownloadItem downloadItem = new DownloadItem(title, kb, product, downloadUrl);
+                            addDownloadItemToQueue(downloadItem);
+                        }
+                    }
+                }
             }
         }
     }

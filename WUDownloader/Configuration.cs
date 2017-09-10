@@ -10,12 +10,17 @@ namespace WUDownloader
         private static string configurationFilePath;
         private static string tableName = "UpdateCatalog";
         private static Dictionary<string, Type> schemaDictionary = new Dictionary<string, Type>();
-        
+
+        //Table variables
+        private static string[] tableHeaders = new string[] { "id", "title", "product", "classification", "lastUpdated", "version", "size", "downloadUrls" };
+        private static Type[] tableColumnTypes = new Type[] { Type.GetType("System.String"), Type.GetType("System.String"), Type.GetType("System.String"),
+                                                  Type.GetType("System.String"), Type.GetType("System.DateTime"), Type.GetType("System.String"),
+                                                  Type.GetType("System.String"), Type.GetType("System.String")};
         //Download Manager non-constants
-        private static string rootPath;
-        private static string downloadPath;
-        private static string importPath;
-        private static string tablePath;
+        private static string rootFolderPath;
+        private static string downloadFolderPath;
+        private static string importFolderPath;
+        private static string tableFolderPath;
 
         //Download Manager constants
         private static string rootPathPrefix = "rootPath=";
@@ -28,11 +33,11 @@ namespace WUDownloader
         private static string download_dialog_url = "https://www.catalog.update.microsoft.com/DownloadDialog.aspx";
 
         public static string CATALOG_URL { get => catalog_url; }
-        public static string DownloadPath { get => downloadPath; set => downloadPath = value; }
-        public static string ImportPath { get => importPath; set => importPath = value; }
-        public static string TablePath { get => tablePath; set => tablePath = value; }
+        public static string DownloadFolderPath { get => downloadFolderPath; set => downloadFolderPath = value; }
+        public static string ImportFolderPath { get => importFolderPath; set => importFolderPath = value; }
+        public static string TableFolderPath { get => tableFolderPath; set => tableFolderPath = value; }
         public static string Download_dialog_url { get => download_dialog_url; set => download_dialog_url = value; }
-        public static string RootPath { get => rootPath; set => rootPath = value; }
+        public static string RootFolderPath { get => rootFolderPath; set => rootFolderPath = value; }
         public static string TableName { get => tableName; }
         public static string ConfigurationFolderPath { get => configurationFolderPath; set { configurationFolderPath = value; ConfigurationFilePath = configurationFolderPath + "\\config.txt"; } }
         public static string ConfigurationFilePath { get => configurationFilePath; set => configurationFilePath = value; }
@@ -42,39 +47,43 @@ namespace WUDownloader
         public static string TablePathPrefix { get => tablePathPrefix; set => tablePathPrefix = value; }
         public static bool IsPortable { get => isPortable; set => isPortable = value; }
         public static Dictionary<string, Type> SchemaDictionary { get => schemaDictionary; set => schemaDictionary = value; }
+        public static string[] TableHeaders { get => tableHeaders; set => tableHeaders = value; }
+        public static Type[] TableColumnTypes { get => tableColumnTypes; set => tableColumnTypes = value; }
 
         public static void setDefaultConfiguration()
         {
             if (isPortable)
             {
                 string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
-                RootPath = executionPath;
+                RootFolderPath = executionPath;
             }
             else
             {
-                RootPath = "C:\\WUDownloader";
+                RootFolderPath = "C:\\WUDownloader";
+                ConfigurationFolderPath = rootFolderPath + "config.txt";
             }
-            DownloadPath = rootPath + "\\Downloads";
-            ImportPath = rootPath + "\\Import";
-            TablePath = rootPath + "\\Table";
+            
+            DownloadFolderPath = rootFolderPath + "\\Downloads";
+            ImportFolderPath = rootFolderPath + "\\Import";
+            TableFolderPath = rootFolderPath + "\\Table";
         }
         public static List<string> getCurrentConfiguration()
         {
             List<string> configLines = new List<string>();
-            configLines.Add(RootPathPrefix + RootPath);
-            configLines.Add(DownloadPathPrefix + downloadPath);
-            configLines.Add(ImportPathPrefix + importPath);
-            configLines.Add(TablePathPrefix + tablePath);
+            configLines.Add(RootPathPrefix + RootFolderPath);
+            configLines.Add(DownloadPathPrefix + downloadFolderPath);
+            configLines.Add(ImportPathPrefix + importFolderPath);
+            configLines.Add(TablePathPrefix + tableFolderPath);
             return configLines;
         }
 
         public static void setNewConfiguration(List<Object> configLines)
         {
             setDefaultConfiguration();
-            RootPath = configLines[0].ToString();
-            DownloadPath = configLines[1].ToString();
-            ImportPath = configLines[2].ToString();
-            TablePath = configLines[3].ToString();
+            RootFolderPath = configLines[0].ToString();
+            DownloadFolderPath = configLines[1].ToString();
+            ImportFolderPath = configLines[2].ToString();
+            TableFolderPath = configLines[3].ToString();
         }
     }
 }
