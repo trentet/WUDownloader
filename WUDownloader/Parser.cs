@@ -6,7 +6,7 @@ using TableBuilderLibrary;
 
 namespace WUDownloader
 {
-    static class Parser
+    public static class Parser
     {
         public static string GetKbFromTitle(string title)
         {
@@ -48,6 +48,14 @@ namespace WUDownloader
             }
             return datarows;
         }
+
+        public static string[] ParseHeadersFromCsvStringList(List<string> csvAsStringList)
+        {
+            //Replace "," with "|" and then remove all quotes, then split by |
+            string[] headers = csvAsStringList[0].Replace("\",\"", "\"|\"").Replace("\"", "").Split('|');
+            return headers;
+        }
+
         public static List<string> ParseLinesContaining(List<string> lines, string searchParam)
         {
             //Returns only lines containing the search parameter

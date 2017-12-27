@@ -7,7 +7,7 @@ using TableBuilderLibrary;
 
 namespace WUDownloader
 {
-    class FileIO
+    public class FileIO
     {
         public static List<string> ImportFileToStringList(string filepath)
         {
@@ -57,7 +57,16 @@ namespace WUDownloader
 
         public static void ExportDataTableToCSV(DataTable table, string folderPath, string fileName)
         {
-            using (StreamWriter writer = new StreamWriter(folderPath + "\\" + fileName + ".csv"))
+            using (StreamWriter writer = new StreamWriter(folderPath.TrimEnd('\\') + "\\" + fileName + ".csv"))
+            {
+                WriteDataTable(table, writer, true);
+                writer.Close();
+            }
+        }
+
+        public static void ExportDataTableToCSV(DataTable table, string filePath)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
                 WriteDataTable(table, writer, true);
                 writer.Close();
