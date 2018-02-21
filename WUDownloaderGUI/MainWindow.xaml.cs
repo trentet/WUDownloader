@@ -44,7 +44,7 @@ namespace WUDownloaderGUI
                 //Get Headers 
                 string[] headers = Parser.ParseHeadersFromCsvStringList(csvStringList);
 
-                DataTable table = TableBuilder.BuildTableSchema("Table", headers);
+                DataTable table = TableBuilder.BuildTableSchema("Table", headers, false);
                 char delimiter = '|';
 
                 //Populate Table

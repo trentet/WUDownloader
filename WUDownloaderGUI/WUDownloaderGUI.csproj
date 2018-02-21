@@ -48,7 +48,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="TableBuilderLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TableBuilderLibrary.1.0.0\lib\net452\TableBuilderLibrary.dll</HintPath>
+      <HintPath>..\packages\TableBuilderLibrary.1.1.0\lib\net452\TableBuilderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

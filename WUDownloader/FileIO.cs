@@ -29,7 +29,7 @@ namespace WUDownloader
         public static DataTable ImportTableFromCsv()
         {
             //Build table with schema
-            DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes);
+            DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes, false);
             //Check if file exists
             if (File.Exists(Configuration.TableFolderPath + "\\" + Configuration.TableName + ".csv")) //If exists
             {

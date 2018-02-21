@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Text;
 
 namespace WUDownloader
 {
@@ -10,7 +11,7 @@ namespace WUDownloader
             string tableName = table.TableName;
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title Like '%" + title + "%' and product Like '%" + product + "%'";
+            string expression = "title Like '%" + EscapeLikeValue(title) + "%' and product Like '%" + EscapeLikeValue(product) + "%'";
             string sortOrder = "lastUpdated DESC";
             
             // Use the Select method to find all rows matching the filter.
@@ -22,6 +23,7 @@ namespace WUDownloader
             return id;
         }
 
+
         public static List<string>[] getDownloadUrlsFromTable(DataTable table, string title, List<string> productList)
         {
             string tableName = table.TableName;
@@ -31,16 +33,16 @@ namespace WUDownloader
             {
                 if (x == productList.Count - 1)
                 {
-                    orPieces += "product Like '%" + productList[x] + "%'";
+                    orPieces += "product Like '%" + EscapeLikeValue(productList[x]) + "%'";
                 }
                 else
                 {
-                    orPieces += "product Like '%" + productList[x] + "%' or ";
+                    orPieces += "product Like '%" + EscapeLikeValue(productList[x]) + "%' or ";
                 }
             }
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title Like '%" + title + "%' and (" + orPieces + ")";
+            string expression = "title Like '%" + EscapeLikeValue(title) + "%' and (" + orPieces + ")";
             string sortOrder = "product, lastUpdated DESC";
 
             // Use the Select method to find all rows matching the filter.
@@ -80,7 +82,7 @@ namespace WUDownloader
             string tableName = table.TableName;
 
             // Presuming the DataTable has a column named Date.
-            string expression = "title LIKE '%" + title + "%'";
+            string expression = "title LIKE '%" + EscapeLikeValue(title) + "%'";
             string sortOrder = "lastUpdated DESC";
 
             // Use the Select method to find all rows matching the filter.
@@ -93,6 +95,30 @@ namespace WUDownloader
             }
 
             return exists;
+        }
+        private static string EscapeLikeValue(string value)
+        {
+            StringBuilder sb = new StringBuilder(value.Length);
+            for (int i = 0; i < value.Length; i++)
+            {
+                char c = value[i];
+                switch (c)
+                {
+                    case ']':
+                    case '[':
+                    case '%':
+                    case '*':
+                        sb.Append("[").Append(c).Append("]");
+                        break;
+                    case '\'':
+                        sb.Append("''");
+                        break;
+                    default:
+                        sb.Append(c);
+                        break;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

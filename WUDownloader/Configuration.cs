@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WUDownloader
 {
-    class Configuration
+    public class Configuration
     {
         private static bool isPortable = false;
         private static string configurationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WUDownloader";

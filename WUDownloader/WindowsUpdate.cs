@@ -15,10 +15,10 @@ namespace WUDownloader
         public static List<string> GetPendingUpdateTitles()
         {
             //UpdateSession uSession = new UpdateSession();
-            Type t = Type.GetTypeFromProgID("Microsoft.Update.Session", "pc12345.student.neumont.edu");
+            //Type t = Type.GetTypeFromProgID("Microsoft.Update.Session", "pc12345.student.neumont.edu");
             UpdateSession uSession = new UpdateSession(); ;//(UpdateSession)Activator.CreateInstance(t);
             IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-            ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type = 'Software' and IsHidden=0");//"IsInstalled=1");// and Type = 'Software'");
+            ISearchResult uResult = uSearcher.Search("IsInstalled=0 and IsHidden=0");// and Type = 'Software' and IsHidden=0");//"IsInstalled=1");// and Type = 'Software'");
 
             List <string> updateTitles = new List<string>();
             foreach (IUpdate update in uResult.Updates)
@@ -34,6 +34,7 @@ namespace WUDownloader
 
         public static List<string> GetPendingUpdateTitlesRemote()
         {
+            //Does not work yet
             Type t = Type.GetTypeFromProgID("Microsoft.Update.Session", "remotehostname");
             UpdateSession uSession = (UpdateSession)Activator.CreateInstance(t);
             IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
