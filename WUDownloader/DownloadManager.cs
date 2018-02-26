@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,20 +9,25 @@ using System.Reflection;
 
 namespace WUDownloader
 {
-    
+
     class DownloadManager
     {
-        public DownloadManager(List<string> productList)
+        public DownloadManager(List<string> productFilter, List<string> languageFilter)
         {
-            ProductList = productList;
+            ProductFilter = productFilter;
+            LanguageFilter = languageFilter;
         }
 
         private List<DownloadItem> downloadQueue = new List<DownloadItem>();
-        private List<string> productList = new List<string>();
+        private List<string> productFilter = new List<string>();
 
-        public List<string> ProductList { get => productList; set => productList = value; }
+        public List<string> ProductFilter { get => productFilter; set => productFilter = value; }
 
-        public void addDownloadItemToQueue(DownloadItem downloadItem)
+        private List<string> languageFilter = new List<string>();
+
+        public List<string> LanguageFilter { get => languageFilter; set => languageFilter = value; }
+
+        public void AddDownloadItemToQueue(DownloadItem downloadItem)
         {
             int queueSize = downloadQueue.Count;
             downloadQueue.Add(downloadItem);
@@ -34,7 +40,7 @@ namespace WUDownloader
                 Console.WriteLine("Item not successfully added to download queue.");
             }
         }
-        public void downloadFilesFromQueue()
+        public void DownloadFilesFromQueue()
         {
             Console.WriteLine("Initializing downloads...");
             Console.WriteLine("Download Queue Size: " + downloadQueue.Count);
@@ -47,15 +53,12 @@ namespace WUDownloader
                 Uri uri = new Uri(downloadUrl);
                 string fileName = System.IO.Path.GetFileName(uri.LocalPath);
                 Console.WriteLine("\nDownloading file for update: " + SortedDownloadQueue[x].Title);
-                Console.WriteLine("File #{0} - {1}", (x+1), fileName); //{0} is current index, {1} is download's file name
-                string[] productList = SortedDownloadQueue[x].Product.Split(',');
-                for (int z = 0; z < productList.Length; z++)
+                Console.WriteLine("File #{0} - {1}", (x + 1), fileName); //{0} is current index + 1, {1} is download's file name
+                string[] products = SortedDownloadQueue[x].Product.Split(',');
+
+                for (int y = 0; y < products.Length; y++)
                 {
-                    productList[z] = productList[z].Trim();
-                }
-                for (int y = 0; y < productList.Length; y++)
-                {
-                    string downloadFolderPath = Configuration.DownloadFolderPath + "\\" + productList[y] + "\\" + SortedDownloadQueue[x].Title;
+                    string downloadFolderPath = Configuration.DownloadFolderPath + "\\" + products[y].Trim() + "\\" + SortedDownloadQueue[x].Title;
                     string fullFilePath = downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath);
                     if (fullFilePath.Length > 260)
                     {
@@ -71,39 +74,37 @@ namespace WUDownloader
                     }
                     else //File is not already downloaded. Download.
                     {
-                        //See if current os list contains an OS from the oslist from config, then create folders and download files
-                        if (productList.Contains(productList[y]))
-                        {
-                            Console.WriteLine("Download Path: " + downloadFolderPath);
-                            Console.WriteLine("Downloading for " + productList[y]);
-                            System.IO.Directory.CreateDirectory(downloadFolderPath);
-                            DownloadWorker d = new DownloadWorker();
-                            d.startDownload(SortedDownloadQueue[x], downloadFolderPath);
-                        }
+                        Console.WriteLine("Download Path: " + downloadFolderPath);
+                        Console.WriteLine("Downloading for " + productFilter[y]);
+                        System.IO.Directory.CreateDirectory(downloadFolderPath);
+                        DownloadWorker d = new DownloadWorker();
+                        d.StartDownload(SortedDownloadQueue[x], downloadFolderPath);
                     }
                 }
             }
         }
-        public void PopulateDownloadQueue(List<string> updateTitles, DataTable table)
+        public void PopulateDownloadQueue(List<UpdateInfo> updates, DataTable table)
         {
-            foreach (string title in updateTitles) //For each update
+            foreach (UpdateInfo update in updates) //For each update
             {
-                string kb = Parser.GetKbFromTitle(title);
+                string kb = Parser.GetKbFromTitle(update.Title);
 
                 if (kb.Length > 0)
                 {
-                    //gets all download URLs for update at current index
-                    List<string>[] products_and_downloadUrls = QueryController.getDownloadUrlsFromTable(table, title, productList);
-                    List<string> productsFromEachRow = products_and_downloadUrls[0];
-                    List<string> downloadUrlsFromEachRow = products_and_downloadUrls[1];
-                    for (int x = 0; x < downloadUrlsFromEachRow.Count; x++)
+                    for (int x = 0; x < update.DownloadUrls.Count; x++)
                     {
-                        string[] downloadUrls = downloadUrlsFromEachRow[x].Split(',');
-                        string product = productsFromEachRow[x];
-                        foreach (string downloadUrl in downloadUrls)
+                        string[] languages = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Value.ToString().Split(',');
+                        string product = update.Product.Trim();
+                        if (languageFilter.Contains(languages[x]) && productFilter.Contains(product))
                         {
-                            DownloadItem downloadItem = new DownloadItem(title, kb, product, downloadUrl);
-                            addDownloadItemToQueue(downloadItem);
+                            DownloadItem downloadItem = new DownloadItem(
+                                update.Title,
+                                kb,
+                                update.Product,
+                                update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Key.ToString().Split(',')[x],  //Download Url
+                                languages[x]
+                                );
+                            AddDownloadItemToQueue(downloadItem);
                         }
                     }
                 }

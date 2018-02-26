@@ -18,14 +18,14 @@ namespace WUDownloader
         public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
         public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
 
-        public void startDownload(DownloadItem downloadItem, string downloadFolderPath)
+        public void StartDownload(DownloadItem downloadItem, string downloadFolderPath)
         {
             isCompleted = false;
             isDownloading = false;
             Thread thread = new Thread(() => {
                 WebClient client = new WebClient();
-                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
+                client.DownloadFileCompleted += new AsyncCompletedEventHandler(Client_DownloadFileCompleted);
                 Uri uri = new Uri(downloadItem.DownloadUrl);
                 client.DownloadFileAsync(new Uri(downloadItem.DownloadUrl), downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath));
             });
@@ -38,7 +38,7 @@ namespace WUDownloader
             thread.Abort();
         }
 
-        void client_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        void Client_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
             isDownloading = true;
             double bytesIn = double.Parse(e.BytesReceived.ToString());
@@ -46,7 +46,7 @@ namespace WUDownloader
             double percentage = Math.Round(bytesIn / totalBytes * 100, 2);
             Console.Write("\rDownload status: " + percentage + "%");
         }
-        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             isCompleted = true;
             

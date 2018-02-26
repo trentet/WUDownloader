@@ -33,8 +33,10 @@ namespace WUDownloaderGUI
 
         private void Import_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "CSV files (*.csv)|*.csv";
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv"
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 string filePath = openFileDialog.FileName.Replace(".csv", "");
@@ -45,7 +47,7 @@ namespace WUDownloaderGUI
                 string[] headers = Parser.ParseHeadersFromCsvStringList(csvStringList);
 
                 DataTable table = TableBuilder.BuildTableSchema("Table", headers, false);
-                char delimiter = '|';
+                char delimiter = ',';
 
                 //Populate Table
                 table.PopulateTableFromCsv(filePath, delimiter, hasHeaders);
@@ -59,9 +61,12 @@ namespace WUDownloaderGUI
             DataTable table = new DataTable();
             table = ((DataView)grid.ItemsSource).ToTable();
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "CSV files (*.csv)|*.csv";
-            saveFileDialog.RestoreDirectory = true;
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv",
+                RestoreDirectory = true
+            };
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 if (saveFileDialog.FileName != "")

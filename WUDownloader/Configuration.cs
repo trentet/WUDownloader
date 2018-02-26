@@ -12,10 +12,10 @@ namespace WUDownloader
         private static Dictionary<string, Type> schemaDictionary = new Dictionary<string, Type>();
 
         //Table variables
-        private static string[] tableHeaders = new string[] { "id", "title", "product", "classification", "lastUpdated", "version", "size", "downloadUrls" };
-        private static Type[] tableColumnTypes = new Type[] { Type.GetType("System.String"), Type.GetType("System.String"), Type.GetType("System.String"),
+        private static string[] tableHeaders = new string[] { "id", "title", "product", "classification", "lastUpdated", "version", "size", "downloadUrls", "languages" };
+        private static Type[] tableColumnTypes = new Type[] { Type.GetType("System.Guid"), Type.GetType("System.String"), Type.GetType("System.String"),
                                                   Type.GetType("System.String"), Type.GetType("System.DateTime"), Type.GetType("System.String"),
-                                                  Type.GetType("System.String"), Type.GetType("System.String")};
+                                                  Type.GetType("System.String"), Type.GetType("System.String"), Type.GetType("System.String")};
         //Download Manager non-constants
         private static string rootFolderPath;
         private static string downloadFolderPath;
@@ -50,7 +50,7 @@ namespace WUDownloader
         public static string[] TableHeaders { get => tableHeaders; set => tableHeaders = value; }
         public static Type[] TableColumnTypes { get => tableColumnTypes; set => tableColumnTypes = value; }
 
-        public static void setDefaultConfiguration()
+        public static void SetDefaultConfiguration()
         {
             if (isPortable)
             {
@@ -67,19 +67,21 @@ namespace WUDownloader
             ImportFolderPath = rootFolderPath + "\\Import";
             TableFolderPath = rootFolderPath + "\\Table";
         }
-        public static List<string> getCurrentConfiguration()
+        public static List<string> GetCurrentConfiguration()
         {
-            List<string> configLines = new List<string>();
-            configLines.Add(RootPathPrefix + RootFolderPath);
-            configLines.Add(DownloadPathPrefix + downloadFolderPath);
-            configLines.Add(ImportPathPrefix + importFolderPath);
-            configLines.Add(TablePathPrefix + tableFolderPath);
+            List<string> configLines = new List<string>
+            {
+                RootPathPrefix + RootFolderPath,
+                DownloadPathPrefix + downloadFolderPath,
+                ImportPathPrefix + importFolderPath,
+                TablePathPrefix + tableFolderPath
+            };
             return configLines;
         }
 
-        public static void setNewConfiguration(List<Object> configLines)
+        public static void SetNewConfiguration(List<Object> configLines)
         {
-            setDefaultConfiguration();
+            SetDefaultConfiguration();
             RootFolderPath = configLines[0].ToString();
             DownloadFolderPath = configLines[1].ToString();
             ImportFolderPath = configLines[2].ToString();

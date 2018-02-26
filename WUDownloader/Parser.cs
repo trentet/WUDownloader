@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using TableBuilderLibrary;
 
@@ -22,7 +24,7 @@ namespace WUDownloader
             }
             return kb;
         }
-        public static  List<DataRow> GetTypedDataRowsFromHTML(DataTable table, HtmlDocument siteAsHtml)
+        public static  List<UpdateInfo> GetUpdateInfoFromHTML(DataTable table, HtmlDocument siteAsHtml)
         {
             //All elements with tag of "td"
             HtmlElementCollection cellElements = siteAsHtml.GetElementsByTagName("td");
@@ -35,24 +37,22 @@ namespace WUDownloader
                     unparsedRow.Add(line);
                 }
             }
-            Object[] cellData = new Object[table.Columns.Count];
-            int numberOfColumnsNotParsedFromSite = 1;
-            int numOfRows = unparsedRow.Count / (table.Columns.Count - numberOfColumnsNotParsedFromSite);
+
+            int numberOfColumnsNotParsedFromSiteTable = 2;
+            int numOfRows = unparsedRow.Count / (table.Columns.Count - numberOfColumnsNotParsedFromSiteTable);
             
-            List<DataRow> datarows = new List<DataRow>();
+            List<UpdateInfo> updates = new List<UpdateInfo>();
             for (int x = 0; x < numOfRows; x++)
             {
-                cellData = ParseHtmlRow(cellData.Length, unparsedRow, x);
-                DataRow datarow = TableBuilder.CreateDataRow(table, TableBuilder.AssignTypesToData(table, cellData));
-                datarows.Add(datarow);
+                UpdateInfo update = ParseHtmlRow(table.Columns.Count, unparsedRow, x);
+                updates.Add(update);
             }
-            return datarows;
+            return updates;
         }
 
         public static string[] ParseHeadersFromCsvStringList(List<string> csvAsStringList)
         {
-            //Replace "," with "|" and then remove all quotes, then split by |
-            string[] headers = csvAsStringList[0].Replace("\",\"", "\"|\"").Replace("\"", "").Split('|');
+            string[] headers = (string[])TableBuilder.SplitCSV(csvAsStringList[0]);
             return headers;
         }
 
@@ -71,29 +71,30 @@ namespace WUDownloader
             return parsedLines;
         }
 
-        public static string[] ParseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
+        public static UpdateInfo ParseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
         {
-            string[] rowData = new string[columnCount];
+            //string[] rowData = new string[columnCount];
             int indexOffset = (rowIndex * 7);
 
-            rowData[0] = (rowHTML[0 + indexOffset].Split('"', '"')[1]);//id [0]
+            string id = (rowHTML[0 + indexOffset].Split('"', '"')[1]);//id [0]
                 int pFrom1 = rowHTML[0 + indexOffset].IndexOf(";\">") + ";\">".Length;
                 int pTo1 = rowHTML[0 + indexOffset].LastIndexOf("</A>");
 
-            rowData[1] = (rowHTML[0 + indexOffset].Substring(pFrom1, pTo1 - pFrom1)); //title [1]
-            rowData[2] = (rowHTML[1 + indexOffset]); //product [2]
-            rowData[3] = (rowHTML[2 + indexOffset]); //classification [3]
-            rowData[4] = (rowHTML[3 + indexOffset]); //lastUpdated [4]
-            rowData[5] = (rowHTML[4 + indexOffset]); //version [5]
+            string title = (rowHTML[0 + indexOffset].Substring(pFrom1, pTo1 - pFrom1)); //title [1]
+            string product = (rowHTML[1 + indexOffset]); //product [2]
+            string classification = (rowHTML[2 + indexOffset]); //classification [3]
+            DateTime lastUpdated = Convert.ToDateTime(rowHTML[3 + indexOffset]); //lastUpdated [4]
+            string version = (rowHTML[4 + indexOffset]); //version [5]
                 int pFrom2 = rowHTML[5 + indexOffset].IndexOf("_size>") + "_size>".Length;
                 int pTo2 = rowHTML[5 + indexOffset].LastIndexOf("</SPAN> <SPAN");
 
-            rowData[6] = (rowHTML[5 + indexOffset].Substring(pFrom2, pTo2 - pFrom2)); //size [6]
+            string size = (rowHTML[5 + indexOffset].Substring(pFrom2, pTo2 - pFrom2)); //size [6]
 
-            string downloadDialogSiteHTML = WebController.makePost(rowData[0], Configuration.Download_dialog_url);
-            rowData[7] = string.Join(",", WebController.getDownloadURLs(downloadDialogSiteHTML)); //downloadUrls [7]
+            string downloadDialogSiteHTML = WebController.MakePost(id, Configuration.Download_dialog_url);
+            OrderedDictionary downloadUrls = WebController.GetDownloadURLs(downloadDialogSiteHTML); //downloadUrls [7]
 
-            return rowData;
+            UpdateInfo update = new UpdateInfo(id, title, product, classification, lastUpdated, version, size, downloadUrls);
+            return update;
         }
 
         public static List<Object> ParseConfigFile(List<string> lines)
@@ -127,12 +128,14 @@ namespace WUDownloader
                 }
             }
 
-            List<Object> configurationValues = new List<Object>();
-            configurationValues.Add(rootPath);
-            configurationValues.Add(downloadPath);
-            configurationValues.Add(importPath);
-            configurationValues.Add(tablePath);
-            
+            List<Object> configurationValues = new List<Object>
+            {
+                rootPath,
+                downloadPath,
+                importPath,
+                tablePath
+            };
+
             return configurationValues;
         }
     }

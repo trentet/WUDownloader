@@ -28,8 +28,9 @@ namespace WUDownloader
 
         public static DataTable ImportTableFromCsv()
         {
+            bool needsGuid = false;
             //Build table with schema
-            DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes, false);
+            DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes, needsGuid);
             //Check if file exists
             if (File.Exists(Configuration.TableFolderPath + "\\" + Configuration.TableName + ".csv")) //If exists
             {
@@ -41,7 +42,7 @@ namespace WUDownloader
                 //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes);
 
                 //Populate table from file
-                table.PopulateTableFromCsv(Configuration.TableFolderPath, Configuration.TableName, '|', true);
+                table.PopulateTableFromCsv(Configuration.TableFolderPath, Configuration.TableName, ',', true, needsGuid);
                 return table;
             }
             else //If not exists
@@ -81,7 +82,7 @@ namespace WUDownloader
                     .OfType<DataColumn>()
                     .Select(column => QuoteValue(column.ColumnName));
 
-                writer.WriteLine(String.Join("|", headerValues));
+                writer.WriteLine(String.Join(",", headerValues));
             }
 
             IEnumerable<String> items = null;
@@ -89,7 +90,7 @@ namespace WUDownloader
             foreach (DataRow row in sourceTable.Rows)
             {
                 items = row.ItemArray.Select(o => QuoteValue(o.ToString()));
-                writer.WriteLine(String.Join("|", items));
+                writer.WriteLine(String.Join(",", items));
             }
 
             writer.Flush();

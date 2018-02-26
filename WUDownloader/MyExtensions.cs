@@ -11,12 +11,17 @@ namespace WUDownloader
 {
     public static class MyExtensions
     {
-        public static DataTable PopulateTableFromSite(this DataTable table, HtmlDocument siteAsHtml, string tablePath, string fileName)
+        public static DataTable PopulateTableWithUpdates(this DataTable table, List<UpdateInfo> updates, string tablePath, string fileName)
         {
-            List<DataRow> typedDataRows = Parser.GetTypedDataRowsFromHTML(table, siteAsHtml); //stores all DataRows from HtmlDocument
-            foreach (DataRow datarow in typedDataRows) //Adds rows to table
+            foreach (UpdateInfo update in updates) //Adds rows to table
             {
-                table.AddRowToTable(datarow);
+                for (int z = 0; z < update.DownloadUrls.Count; z++)
+                {
+                    object[] cellData = new object[] { update.Id, update.Title, update.Product, update.Classification, update.LastUpdated, update.Version, update.Size, update.DownloadUrls[z] };
+                    DataRow datarow = TableBuilder.CreateDataRow(table, TableBuilder.AssignTypesToData(table, cellData, false), false);
+                    table.AddRowToTable(datarow);
+                }
+                
                 FileIO.ExportDataTableToCSV(table, tablePath, fileName); //Saves table to CSV
             }
             return table;

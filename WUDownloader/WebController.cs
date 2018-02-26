@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -10,12 +11,12 @@ namespace WUDownloader
 {
     class WebController
     {
-        public void openURLinNewTab(string CATALOG_URL, string kb)
+        public void OpenURLinNewTab(string CATALOG_URL, string kb)
         {
             Process.Start(CATALOG_URL + kb);
         }
 
-        public static string makePost(string buttonID, string url)
+        public static string MakePost(string buttonID, string url)
         {
             // Create a request using a URL that can receive a post. 
             WebRequest request = WebRequest.Create(url);
@@ -58,7 +59,7 @@ namespace WUDownloader
             return responseFromServer;
         }
         
-        public static HtmlDocument getSiteAsHTML(string url)
+        public static HtmlDocument GetSiteAsHTML(string url)
         {
             //Initialize empty HtmlDocument
             HtmlDocument siteAsHTML = GetHtmlDocumentFromString("");
@@ -101,11 +102,14 @@ namespace WUDownloader
             return siteAsHTML;
         }
 
-        public static List<string> getDownloadURLs(string downloadDialogSiteHTML)
+        public static OrderedDictionary GetDownloadURLs(string downloadDialogSiteHTML)
         {
             //Splits string into an array by new line
             string[] result = downloadDialogSiteHTML.Split(new[] { '\r', '\n' });
-            List<string> downloadURLs = new List<string>();
+            OrderedDictionary downloadURLs = new OrderedDictionary();
+
+            string url = "";
+            string language = "";
             foreach (string line in result)
             {
                 if (line.StartsWith("downloadInformation[0].files[")) //All lines with a download URL start with this...
@@ -115,18 +119,55 @@ namespace WUDownloader
                         int pFrom1 = line.IndexOf("].url = '") + "].url = '".Length;
                         int pTo1 = line.LastIndexOf("';");
                         string downloadURL = line.Substring(pFrom1, pTo1 - pFrom1); // Download URL
-                        downloadURLs.Add(downloadURL);
+                        url = downloadURL;
+                        
                     }
+                    if (line.Contains("].longLanguages = '")) //...but end with this before the language. This allows for any index of file url
+                    {
+                        int pFrom1 = line.IndexOf("].longLanguages = '") + "].longLanguages = '".Length;
+                        int pTo1 = line.LastIndexOf("';");
+                        string longLanguage = line.Substring(pFrom1, pTo1 - pFrom1); // Long Language
+                        language = longLanguage;
+                    }
+                }
+                if (url.Length > 0 && language.Length > 0)
+                {
+                    downloadURLs.Add(new Uri(url),language);
+                    url = "";
+                    language = "";
                 }
             }
             return downloadURLs;
         }
 
-    private static System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
+        //public static List<string> GetDownloadLanguages(string downloadDialogSiteHTML)
+        //{
+        //    //Splits string into an array by new line
+        //    string[] result = downloadDialogSiteHTML.Split(new[] { '\r', '\n' });
+        //    List<string> longLanguages = new List<string>();
+        //    foreach (string line in result)
+        //    {
+        //        if (line.StartsWith("downloadInformation[0].files[")) //All lines with the language of the update start with this...
+        //        {
+        //            if (line.Contains("].longLanguages = '")) //...but end with this before the language. This allows for any index of file url
+        //            {
+        //                int pFrom1 = line.IndexOf("].longLanguages = '") + "].longLanguages = '".Length;
+        //                int pTo1 = line.LastIndexOf("';");
+        //                string longLanguage = line.Substring(pFrom1, pTo1 - pFrom1); // Long Language
+        //                longLanguages.Add(longLanguage);
+        //            }
+        //        }
+        //    }
+        //    return longLanguages;
+        //}
+
+        private static System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
         {
-            WebBrowser browser = new WebBrowser();
-            browser.ScriptErrorsSuppressed = true; //not necessesory you can remove it
-            browser.DocumentText = html;
+            WebBrowser browser = new WebBrowser
+            {
+                ScriptErrorsSuppressed = true, //not necessesory you can remove it
+                DocumentText = html
+            };
             browser.Document.OpenNew(true);
             browser.Document.Write(html);
             browser.Refresh();
