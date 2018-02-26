@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WUDownloader
 {
@@ -17,7 +13,6 @@ namespace WUDownloader
         private string version;
         private string size;
         private OrderedDictionary downloadUrls;
-
 
         public UpdateInfo(string id, string title, string product, string classification, DateTime lastUpdated, string version, string size, OrderedDictionary downloadUrls)
         {

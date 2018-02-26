@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
@@ -139,27 +138,6 @@ namespace WUDownloader
             }
             return downloadURLs;
         }
-
-        //public static List<string> GetDownloadLanguages(string downloadDialogSiteHTML)
-        //{
-        //    //Splits string into an array by new line
-        //    string[] result = downloadDialogSiteHTML.Split(new[] { '\r', '\n' });
-        //    List<string> longLanguages = new List<string>();
-        //    foreach (string line in result)
-        //    {
-        //        if (line.StartsWith("downloadInformation[0].files[")) //All lines with the language of the update start with this...
-        //        {
-        //            if (line.Contains("].longLanguages = '")) //...but end with this before the language. This allows for any index of file url
-        //            {
-        //                int pFrom1 = line.IndexOf("].longLanguages = '") + "].longLanguages = '".Length;
-        //                int pTo1 = line.LastIndexOf("';");
-        //                string longLanguage = line.Substring(pFrom1, pTo1 - pFrom1); // Long Language
-        //                longLanguages.Add(longLanguage);
-        //            }
-        //        }
-        //    }
-        //    return longLanguages;
-        //}
 
         private static System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
         {

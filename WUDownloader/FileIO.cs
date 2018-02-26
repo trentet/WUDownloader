@@ -35,11 +35,6 @@ namespace WUDownloader
             if (File.Exists(Configuration.TableFolderPath + "\\" + Configuration.TableName + ".csv")) //If exists
             {
                 Console.WriteLine("CSV file exists. Importing...");
-                //Import file
-                //List<string> csv = FileIO.ImportCsvToStringList(Configuration.TablePath + "\\" + Configuration.TableName);
-
-                ////Build table with schema
-                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, Configuration.TableHeaders, Configuration.TableColumnTypes);
 
                 //Populate table from file
                 table.PopulateTableFromCsv(Configuration.TableFolderPath, Configuration.TableName, ',', true, needsGuid);
@@ -48,8 +43,7 @@ namespace WUDownloader
             else //If not exists
             {
                 Console.WriteLine("CSV file does not exists. Generating...");
-                //Build table from scratch
-                //DataTable table = TableBuilder.BuildTableSchema(Configuration.TableName, headers, columnTypes);
+
                 ExportDataTableToCSV(table, Configuration.TableFolderPath, Configuration.TableName);
                 Console.WriteLine("CSV file saved.");
                 return table;

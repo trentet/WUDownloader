@@ -153,22 +153,12 @@ namespace WUDownloader
 
         public static DataRow[] GetUpdateInfoFromTable(DataTable table, string title)
         {
-            //bool exists = false;
-
-            string tableName = table.TableName;
-
             // Presuming the DataTable has a column named Date.
             string expression = "title LIKE '%" + EscapeLikeValue(title) + "%'";
             string sortOrder = "lastUpdated DESC";
 
             // Use the Select method to find all rows matching the filter.
             DataRow[] foundRows = table.Select(expression, sortOrder);
-
-            ////If foundRows.Length is 0, then the query returned nothing
-            //if (foundRows.Length > 0)
-            //{
-            //    exists = true;
-            //}
 
             return foundRows;
         }

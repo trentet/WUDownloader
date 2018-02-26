@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WUApiLib;
-using System.Management;
 using System.Net;
 using System.Net.Sockets;
 
@@ -18,7 +14,7 @@ namespace WUDownloader
             //Type t = Type.GetTypeFromProgID("Microsoft.Update.Session", "pc12345.student.neumont.edu");
             UpdateSession uSession = new UpdateSession(); ;//(UpdateSession)Activator.CreateInstance(t);
             IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-            ISearchResult uResult = uSearcher.Search("IsInstalled=" + isInstalled + " and IsHidden=0");// and Type = 'Software' and IsHidden=0");//"IsInstalled=1");// and Type = 'Software'");
+            ISearchResult uResult = uSearcher.Search("IsInstalled=" + isInstalled + " and IsHidden=0");// and Type = 'Software'
 
             List <string> updateTitles = new List<string>();
             foreach (IUpdate update in uResult.Updates)

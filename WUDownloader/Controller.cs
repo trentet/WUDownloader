@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
-using System.Collections;
 using System.Data;
 using TableBuilderLibrary;
 using System.Collections.Specialized;
@@ -22,20 +21,12 @@ namespace WUDownloader
             {
                 CollectInfoForTable(updateTitles);
             }
-            else if (menuSelection == 2) //Download Updates
+            else if (menuSelection == 2) //Collect and Download Updates
             {
                 List<UpdateInfo> updates = CollectInfoForTable(updateTitles);
                 DataTable table = FileIO.ImportTableFromCsv();
                 StartDownloadManager(updates, table);
             }
-            //else if (menuSelection == 3) // Collect update information and download updates
-            //{
-            //    List<string> updateTitles = CollectUpdateTitles();
-            //    StartDownloadManager(updateTitles);
-            //}
-
-
-
 
             Console.WriteLine("Exiting...");
             System.Console.ReadKey();
@@ -59,10 +50,8 @@ namespace WUDownloader
         {
             Console.WriteLine("Select an option below:");
             Console.WriteLine("1. Collect Update Information");
-            //Console.WriteLine("2. Download Updates");
             Console.WriteLine("2. Collect Update Information & Download Updates");
 
-            //ConsoleInput c = new ConsoleInput();
             int input = 0;
             do
             {
@@ -72,21 +61,14 @@ namespace WUDownloader
                     Console.WriteLine("Incorrect selection. Please try again.");
                 }
             } while (input < 1 || input > 2);
-            //while (input != 1 || input > 2)
-            //{
-            //    input = ConsoleInput.PositiveInteger();
-            //    if (input < 1 || input > 2)
-            //    {
-            //        Console.WriteLine("Incorrect selection. Please try again.");
-            //    }
-            //}
+
             Console.WriteLine("");
             return input;
         }
         private List<string> CollectUpdateTitles()
         {
             Console.WriteLine("Would you like to import update titles from file or scan current device?");
-            //ConsoleInput c = new ConsoleInput();
+
             int importOrScanInput = 0;
             do
             {
@@ -105,7 +87,7 @@ namespace WUDownloader
             {
                 Console.WriteLine("\nYou have chosen to Scan. ");
                 Console.WriteLine("\nWould you like to check for available updates or installed updates?");
-                //ConsoleInput c = new ConsoleInput();
+
                 int installedOrAvailableinput = 0;
                 do
                 {
@@ -167,12 +149,11 @@ namespace WUDownloader
         private void ConfigurationSetup()
         {
             string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
-            //Console.WriteLine(executionPath);
+
             if (File.Exists(executionPath + "\\" + "portable.txt"))
             {
                 Configuration.IsPortable = true;
                 Configuration.ConfigurationFolderPath = executionPath;
-                //Configuration.ConfigurationFilePath = Configuration.ConfigurationFolderPath + "\\" + "config.txt";
             }
 
             Configuration.SetDefaultConfiguration(); //sets default values
@@ -261,12 +242,14 @@ namespace WUDownloader
                 {
                     Console.WriteLine("Update data already exists in table. Skipping...");
                     DataRow[] rows = QueryController.GetUpdateInfoFromTable(table, updateTitle);
-                    OrderedDictionary dictionary = new OrderedDictionary();
-                    dictionary.Add(rows[0]["downloadUrls"].ToString(), rows[0]["languages"].ToString());
-                    UpdateInfo update = new UpdateInfo( 
+                    OrderedDictionary dictionary = new OrderedDictionary
+                    {
+                        { rows[0]["downloadUrls"].ToString(), rows[0]["languages"].ToString() }
+                    };
+                    UpdateInfo update = new UpdateInfo(
                         rows[0]["id"].ToString(),
                         rows[0]["title"].ToString(),
-                        rows[0]["product"].ToString(), 
+                        rows[0]["product"].ToString(),
                         rows[0]["classification"].ToString(),
                         Convert.ToDateTime(rows[0]["lastUpdated"]),
                         rows[0]["version"].ToString(),
@@ -298,7 +281,7 @@ namespace WUDownloader
             }
             return updates;
         }
-        private void StartDownloadManager(List<UpdateInfo> updates, DataTable table)//(List<string> updateTitles, DataTable table)
+        private void StartDownloadManager(List<UpdateInfo> updates, DataTable table)
         {
             List<string> relevantProducts = new List<string>();
             foreach (UpdateInfo update in updates)
@@ -406,7 +389,6 @@ namespace WUDownloader
                         productList.Add(trimmedProduct);
                     }
                 }
-
             }
 
             return productList;

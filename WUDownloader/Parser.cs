@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using TableBuilderLibrary;
 
@@ -59,7 +58,6 @@ namespace WUDownloader
         public static List<string> ParseLinesContaining(List<string> lines, string searchParam)
         {
             //Returns only lines containing the search parameter
-
             List<string> parsedLines = new List<string>();
             foreach (string line in lines)
             {
@@ -73,7 +71,6 @@ namespace WUDownloader
 
         public static UpdateInfo ParseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
         {
-            //string[] rowData = new string[columnCount];
             int indexOffset = (rowIndex * 7);
 
             string id = (rowHTML[0 + indexOffset].Split('"', '"')[1]);//id [0]

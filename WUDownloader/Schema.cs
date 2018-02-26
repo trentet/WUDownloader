@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace WUDownloader
 {
@@ -13,10 +11,5 @@ namespace WUDownloader
 
         public string TableName { get => tableName; set => tableName = value; }
         public Dictionary<string, Type> Dictionary { get => dictionary; set => dictionary = value; }
-
-        //public Schema(string tableName, )
-        //{
-
-        //}
     }
 }
