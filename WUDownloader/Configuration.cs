@@ -60,9 +60,9 @@ namespace WUDownloader
             else
             {
                 RootFolderPath = "C:\\WUDownloader";
-                ConfigurationFolderPath = rootFolderPath + "\\config";
+                //ConfigurationFolderPath = rootFolderPath + "\\Config";
             }
-            
+            ConfigurationFolderPath = rootFolderPath + "\\Config";
             DownloadFolderPath = rootFolderPath + "\\Downloads";
             ImportFolderPath = rootFolderPath + "\\Import";
             TableFolderPath = rootFolderPath + "\\Table";

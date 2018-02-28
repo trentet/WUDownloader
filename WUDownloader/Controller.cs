@@ -233,7 +233,7 @@ namespace WUDownloader
             List<UpdateInfo> updates = new List<UpdateInfo>();
             foreach (string updateTitle in updateTitles) //For each update
             {
-                Console.WriteLine("Collecting data for update " + (x + 1) + " of " + updateTitles.Count + ".");
+                Console.WriteLine("\nCollecting data for update " + (x + 1) + " of " + updateTitles.Count + ".");
 
                 Console.WriteLine("Title is: " + updateTitle);
 

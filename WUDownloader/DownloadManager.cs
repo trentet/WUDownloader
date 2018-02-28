@@ -54,9 +54,10 @@ namespace WUDownloader
                 Console.WriteLine("File #{0} - {1}", (x + 1), fileName); //{0} is current index + 1, {1} is download's file name
                 string[] products = SortedDownloadQueue[x].Product.Split(',');
 
-                for (int y = 0; y < products.Length; y++)
+                //for (int y = 0; y < products.Length; y++)
+                foreach (string product in products)
                 {
-                    string downloadFolderPath = Configuration.DownloadFolderPath + "\\" + products[y].Trim() + "\\" + SortedDownloadQueue[x].Title;
+                    string downloadFolderPath = Configuration.DownloadFolderPath + "\\" + product.Trim() + "\\" + SortedDownloadQueue[x].Title;
                     string fullFilePath = downloadFolderPath + "\\" + System.IO.Path.GetFileName(uri.LocalPath);
                     if (fullFilePath.Length > 260)
                     {
@@ -73,7 +74,7 @@ namespace WUDownloader
                     else //File is not already downloaded. Download.
                     {
                         Console.WriteLine("Download Path: " + downloadFolderPath);
-                        Console.WriteLine("Downloading for " + productFilter[y]);
+                        Console.WriteLine("Downloading for " + product);
                         System.IO.Directory.CreateDirectory(downloadFolderPath);
                         DownloadWorker d = new DownloadWorker();
                         d.StartDownload(SortedDownloadQueue[x], downloadFolderPath);
@@ -91,16 +92,18 @@ namespace WUDownloader
                 {
                     for (int x = 0; x < update.DownloadUrls.Count; x++)
                     {
-                        string[] languages = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Value.ToString().Split(',');
+                        string title = update.Title;
                         string product = update.Product.Trim();
-                        if (languageFilter.Contains(languages[x]) && productFilter.Contains(product))
+                        string language = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Value.ToString();
+                        string downloadUrl = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Key.ToString();
+                        if (languageFilter.Contains(language) && productFilter.Contains(product))
                         {
                             DownloadItem downloadItem = new DownloadItem(
-                                update.Title,
+                                title,
                                 kb,
-                                update.Product,
-                                update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Key.ToString().Split(',')[x],  //Download Url
-                                languages[x]
+                                product,
+                                downloadUrl,
+                                language
                                 );
                             AddDownloadItemToQueue(downloadItem);
                         }

@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WUDownloader", "WUDownloade
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WUDownloaderGUI", "WUDownloaderGUI\WUDownloaderGUI.csproj", "{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableBuilderLibrary", "..\..\..\Repos\TableBuilderLibrary\TableBuilderLibrary\TableBuilderLibrary.csproj", "{A8207332-7BF4-4DA1-808E-B9771B472F6B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8207332-7BF4-4DA1-808E-B9771B472F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8207332-7BF4-4DA1-808E-B9771B472F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8207332-7BF4-4DA1-808E-B9771B472F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8207332-7BF4-4DA1-808E-B9771B472F6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

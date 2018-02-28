@@ -50,7 +50,7 @@ namespace WUDownloaderGUI
                 char delimiter = ',';
 
                 //Populate Table
-                table.PopulateTableFromCsv(filePath, delimiter, hasHeaders);
+                table.PopulateTableFromCsv(filePath, delimiter, hasHeaders, false);
 
                 grid.ItemsSource = table.AsDataView();
             }

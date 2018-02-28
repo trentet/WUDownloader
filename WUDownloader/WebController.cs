@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
@@ -129,7 +132,7 @@ namespace WUDownloader
                         language = longLanguage;
                     }
                 }
-                if (url.Length > 0 && language.Length > 0)
+                if (url.Length > 0 && language.Length > 0 && !downloadURLs.Contains(new Uri(url)))
                 {
                     downloadURLs.Add(new Uri(url),language);
                     url = "";
