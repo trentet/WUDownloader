@@ -20,8 +20,8 @@ namespace WUDownloader
 
         public void StartDownload(DownloadItem downloadItem, string downloadFolderPath)
         {
-            isCompleted = false;
-            isDownloading = false;
+            IsCompleted = false;
+            IsDownloading = false;
             Thread thread = new Thread(() => {
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
@@ -31,7 +31,7 @@ namespace WUDownloader
             });
             thread.Start();
             thread.Join();
-            while (isCompleted == false)
+            while (IsCompleted == false)
             {
                 Thread.Sleep(1000);
             }
@@ -40,7 +40,7 @@ namespace WUDownloader
 
         void Client_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
-            isDownloading = true;
+            IsDownloading = true;
             double bytesIn = double.Parse(e.BytesReceived.ToString());
             double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
             double percentage = Math.Round(bytesIn / totalBytes * 100, 2);
@@ -48,10 +48,10 @@ namespace WUDownloader
         }
         void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            isCompleted = true;
+            IsCompleted = true;
             
             Console.WriteLine("\nDownload Completed\n\r");
-            isDownloading = false;
+            IsDownloading = false;
         }
     }
 }
