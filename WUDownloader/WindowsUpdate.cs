@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using WUApiLib;
+using Interop.WUApiLib;
 using System.Net;
 using System.Net.Sockets;
 
@@ -10,18 +10,26 @@ namespace WUDownloader
     {
         public static List<string> GetPendingUpdateTitles(int isInstalled)
         {
-            //UpdateSession uSession = new UpdateSession();
-            //Type t = Type.GetTypeFromProgID("Microsoft.Update.Session", "pc12345.student.neumont.edu");
-            UpdateSession uSession = new UpdateSession(); ;//(UpdateSession)Activator.CreateInstance(t);
-            IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-            ISearchResult uResult = uSearcher.Search("IsInstalled=" + isInstalled + " and IsHidden=0");// and Type = 'Software'
-
-            List <string> updateTitles = new List<string>();
-            foreach (IUpdate update in uResult.Updates)
+            try
             {
-                updateTitles.Add(update.Title);
+                UpdateSession uSession = new UpdateSession();
+                IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
+                ISearchResult uResult = uSearcher.Search("IsInstalled=" + isInstalled + " and IsHidden=0");// and Type = 'Software'
+
+                List<string> updateTitles = new List<string>();
+                foreach (IUpdate update in uResult.Updates)
+                {
+                    updateTitles.Add(update.Title);
+                }
+                return updateTitles;
             }
-            return updateTitles;
+            catch (Exception e)
+            {
+                Console.WriteLine(e.InnerException);
+                Console.WriteLine(e.StackTrace);
+                throw;
+            }
+            
 
             //UpdateDownloader downloader = uSession.CreateUpdateDownloader();
             //downloader.Updates = uResult.Updates;

@@ -94,12 +94,13 @@ namespace WUDownloader
             return update;
         }
 
-        public static List<Object> ParseConfigFile(List<string> lines)
+        public static List<string> ParseConfigFile(List<string> lines)
         {
             string rootPath = "";
             string downloadPath = "";
             string importPath = "";
             string tablePath = "";
+            string logPath = "";
 
             foreach (string line in lines)
             {
@@ -123,14 +124,20 @@ namespace WUDownloader
                     tablePath = line.Remove(0, Configuration.TablePathPrefix.Length);
                     continue;
                 }
+                else if (line.StartsWith(Configuration.LogPathPrefix)) //logPath
+                {
+                    logPath = line.Remove(0, Configuration.LogPathPrefix.Length);
+                    continue;
+                }
             }
 
-            List<Object> configurationValues = new List<Object>
+            List<string> configurationValues = new List<string>
             {
                 rootPath,
                 downloadPath,
                 importPath,
-                tablePath
+                tablePath,
+                logPath
             };
 
             return configurationValues;

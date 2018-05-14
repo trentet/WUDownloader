@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TLogger.Controller;
 
 namespace WUDownloader
 {
@@ -21,12 +22,15 @@ namespace WUDownloader
         private static string downloadFolderPath;
         private static string importFolderPath;
         private static string tableFolderPath;
+        private static string logFolderPath = "";
+        private static string logFileName = "";
 
         //Download Manager constants
         private static string rootPathPrefix = "rootPath=";
         private static string downloadPathPrefix = "downloadPath=";
         private static string importPathPrefix = "importPath=";
         private static string tablePathPrefix = "tablePath=";
+        private static string logPathPrefix = "logPath=";
 
         //WebController constants
         private static string catalog_url = "https://www.catalog.update.microsoft.com/Search.aspx?q=";
@@ -49,6 +53,11 @@ namespace WUDownloader
         public static Dictionary<string, Type> SchemaDictionary { get => schemaDictionary; set => schemaDictionary = value; }
         public static string[] TableHeaders { get => tableHeaders; set => tableHeaders = value; }
         public static Type[] TableColumnTypes { get => tableColumnTypes; set => tableColumnTypes = value; }
+        public static string LogFolderPath { get => logFolderPath; set { logFolderPath = value; Logger.SaveDirectory = LogFolderPath; } }
+        public static string LogPathPrefix { get => logPathPrefix; set => logPathPrefix = value; }
+        public static string LogFileName { get => logFileName; set { logFileName = value; Logger.FileName = LogFileName; } }
+
+        public static LogHandler Logger = new LogHandler(LogFolderPath, LogFileName);
 
         public static void SetDefaultConfiguration()
         {
@@ -66,26 +75,31 @@ namespace WUDownloader
             DownloadFolderPath = rootFolderPath + "\\Downloads";
             ImportFolderPath = rootFolderPath + "\\Import";
             TableFolderPath = rootFolderPath + "\\Table";
+            LogFolderPath = rootFolderPath + "\\Logs";
+            LogFileName = "log";
         }
         public static List<string> GetCurrentConfiguration()
         {
             List<string> configLines = new List<string>
             {
                 RootPathPrefix + RootFolderPath,
-                DownloadPathPrefix + downloadFolderPath,
-                ImportPathPrefix + importFolderPath,
-                TablePathPrefix + tableFolderPath
+                DownloadPathPrefix + DownloadFolderPath,
+                ImportPathPrefix + ImportFolderPath,
+                TablePathPrefix + TableFolderPath,
+                LogPathPrefix + LogFolderPath
             };
             return configLines;
         }
 
-        public static void SetNewConfiguration(List<Object> configLines)
+        public static void SetNewConfiguration(List<string> configLines)
         {
             SetDefaultConfiguration();
-            RootFolderPath = configLines[0].ToString();
-            DownloadFolderPath = configLines[1].ToString();
-            ImportFolderPath = configLines[2].ToString();
-            TableFolderPath = configLines[3].ToString();
+            RootFolderPath = configLines[0];
+            DownloadFolderPath = configLines[1];
+            ImportFolderPath = configLines[2];
+            TableFolderPath = configLines[3];
+            LogFolderPath = configLines[4];
+            LogFileName = "log";
         }
     }
 }

@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WUDownloader", "WUDownloader\WUDownloader.csproj", "{A8A1D241-800F-4BCE-A821-4D054D868346}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WUDownloaderGUI", "WUDownloaderGUI\WUDownloaderGUI.csproj", "{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{A8A1D241-800F-4BCE-A821-4D054D868346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8A1D241-800F-4BCE-A821-4D054D868346}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8A1D241-800F-4BCE-A821-4D054D868346}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66A2217F-B51D-48A6-80B8-FE87BC8E7E03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

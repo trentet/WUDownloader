@@ -17,7 +17,7 @@ namespace WUDownloader
 
         public static void ExportStringListToFile(string filepath, List<string> lines)
         {
-            System.IO.File.WriteAllLines(filepath, lines);
+            System.IO.File.WriteAllLines(filepath, lines.ToArray());
         }
 
         public static List<string> ImportCsvToStringList(string filepath)
@@ -76,7 +76,7 @@ namespace WUDownloader
                     .OfType<DataColumn>()
                     .Select(column => QuoteValue(column.ColumnName));
 
-                writer.WriteLine(String.Join(",", headerValues));
+                writer.WriteLine(String.Join(",", headerValues.ToArray()));
             }
 
             IEnumerable<String> items = null;
@@ -84,7 +84,7 @@ namespace WUDownloader
             foreach (DataRow row in sourceTable.Rows)
             {
                 items = row.ItemArray.Select(o => QuoteValue(o.ToString()));
-                writer.WriteLine(String.Join(",", items));
+                writer.WriteLine(String.Join(",", items.ToArray()));
             }
 
             writer.Flush();

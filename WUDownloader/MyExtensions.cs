@@ -8,7 +8,7 @@ namespace WUDownloader
 {
     public static class MyExtensions
     {
-        public static DataTable PopulateTableWithUpdates(this DataTable table, List<UpdateInfo> updates, string tablePath, string fileName)
+        public static DataTable AddUpdatesToTable(this DataTable table, List<UpdateInfo> updates, string tablePath, string fileName)
         {
             foreach (UpdateInfo update in updates) //Adds rows to table
             {

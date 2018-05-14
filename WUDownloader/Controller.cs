@@ -98,11 +98,13 @@ namespace WUDownloader
                 if (installedOrAvailableinput == 1)
                 {
                     Console.WriteLine("\nYou have chosen Available Updates. Scanning for available updates...");
+                    Console.WriteLine("This may take a few minutes...");
                     updateTitles = WindowsUpdate.GetPendingUpdateTitles(0);
                 }
                 else if (installedOrAvailableinput == 2)
                 {
                     Console.WriteLine("\nYou have chosen Installed Updates. Scanning for installed updates...");
+                    Console.WriteLine("This may take a few minutes...");
                     updateTitles = WindowsUpdate.GetPendingUpdateTitles(1);
                 }
 
@@ -135,9 +137,13 @@ namespace WUDownloader
                 {
                     Directory.CreateDirectory(Configuration.TableFolderPath);
                 }
+                if (!Directory.Exists(Configuration.LogFolderPath))
+                {
+                    Directory.CreateDirectory(Configuration.LogFolderPath);
+                }
             }
             if (Directory.Exists(Configuration.RootFolderPath) && Directory.Exists(Configuration.DownloadFolderPath) &&
-                    Directory.Exists(Configuration.ImportFolderPath) && Directory.Exists(Configuration.TableFolderPath))
+                    Directory.Exists(Configuration.ImportFolderPath) && Directory.Exists(Configuration.TableFolderPath) && Directory.Exists(Configuration.LogFolderPath))
             {
                 Console.WriteLine("Folder creation successful. Root folder located at: " + Configuration.RootFolderPath);
             }
@@ -184,7 +190,7 @@ namespace WUDownloader
             {
                 Console.WriteLine("Configuration file detected. Importing...");
                 List<string> configLines = FileIO.ImportFileToStringList(Configuration.ConfigurationFilePath);
-                List<Object> configValues = Parser.ParseConfigFile(configLines);
+                List<string> configValues = Parser.ParseConfigFile(configLines);
                 Configuration.SetNewConfiguration(configValues);
                 Console.WriteLine("Configuration settings imported.");
             }
@@ -272,7 +278,7 @@ namespace WUDownloader
                         }
                         else
                         {
-                            table.PopulateTableWithUpdates(kbUpdates, Configuration.TableFolderPath, Configuration.TableName);
+                            table.AddUpdatesToTable(kbUpdates, Configuration.TableFolderPath, Configuration.TableName);
                             updates.AddRange(kbUpdates);
                         }
                     }
