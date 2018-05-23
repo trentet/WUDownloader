@@ -1,4 +1,3 @@
-# WUDownloader
 What is WUDownloader?
 5/13/2018 - v1.1.0
 
