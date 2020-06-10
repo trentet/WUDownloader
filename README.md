@@ -1,32 +1,32 @@
 What is WUDownloader?  
-5/13/2018 - v1.1.0
+6/9/2020 - v1.2.0.1
 
 WUDownloader is a standalone console application designed to collect information on and download offline installers
 for Windows Updates.
 
 Requirements:  
---.NET Framework 3.5 or newer  
+--.NET Framework 4.0 or newer  
 --Internet Connection  
 --Windows Update component installed  
 --User must have privileges to run Windows Update (Some organizations disable this privilege for end-users)  
---Depending on privileges, Admin privileges may be necessary for standard mode  
+--Depending on privileges, Admin privileges may be necessary for standard mode
+--Windows 7, Windows 8, Windows 8.1, Windows 10, Windows Server 2008 (Untested), Windows Server 2012 (Untested), Windows Server 2012 R2 (Untested), Windows Server 2016 (Untested), Windows Server 2019 (Untested)
 
 Features:  
---WUDownloader supports both portable and standard mode.  
---Any update that is found on the official Microsoft Update Catalog can be fetched.  
---WUDownloader will automatically skip any updates that are not found in the Catalog.  
---Supports scanning current OS for updates, or through file import.  
---Supports downloading of any platform/product supported by a given update.  
---Filters out updates utilizing any non-English languages.  
---Displays download progress in real-time.  
---Allows filtering of platforms to download for.  
+--WUDownloader supports both portable and standard mode.
+--Any update that is found on the official Microsoft Update Catalog can be fetched.
+--WUDownloader will automatically skip any updates that are not found in the Catalog.
+--Supports scanning current OS for updates, or through file import by list of KB nmumbers.
+--Supports downloading of any platform/product supported by a given update.
+--Filters out updates utilizing any non-English languages. Additional language support planned.
+--Displays download progress in real-time. Downloads are currently 1 at a time. Multiple downloads simultaneously planned.  
+--Allows filtering of platforms to download for.
 --Supports downloading both available updates and already installed updated.  
 
 Known Bugs:  
 --Language Packs *sometimes* crash WUDownloader. This is a GUID issue. Solution planned.  
---When scanning for updates, updates that already exist in the UpdateCatalog.csv sometimes are skipped
-	for download. Solution planned.  
---Application will crash if UpdateCatalog.csv or Updates.txt are open when importing or exporting. Easy fix.  
+--When scanning for updates, updates that already exist in the UpdateCatalog.csv sometimes are skipped for download. Solution planned.  
+--Application will crash if UpdateCatalog.csv or Updates.txt are open when importing or exporting. Solution planned.  
 --Internet connection drop can crash the application. Researching solution.  
 --Application will crash if Windows Update component is removed from the OS.  
 --When scanning for available updates and none are available, the product filtering will be empty.  
@@ -44,7 +44,7 @@ Plans for the Future:
 --Add preferences to config.txt  
 --Support languages other than English  
 --Support .csv or .xlsx file types for file import feature  
---Asynchronous downloads  
+--Multiple asynchronous downloads  
 --Automatically detect missing prerequisites  
 --Support restricting collection only to specific platform  
 --Support drivers available through Windows Update  
