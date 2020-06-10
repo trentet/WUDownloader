@@ -10,7 +10,7 @@ Requirements:
 --Windows Update component installed  
 --User must have privileges to run Windows Update (Some organizations disable this privilege for end-users)  
 --Depending on privileges, Admin privileges may be necessary for standard mode
---Windows 7, Windows 8, Windows 8.1, Windows 10, Windows Server 2008 (Untested), Windows Server 2012 (Untested), Windows Server 2012 R2 (Untested), Windows Server 2016 (Untested), Windows Server 2019 (Untested)
+--Windows 7, Windows 8, Windows 8.1, Windows 10, Windows Server 2008 (Untested), Windows Server 2012 (Untested), Windows Server 2012 R2 (Untested), Windows Server 2016, Windows Server 2019 (Untested)
 
 Features:  
 --WUDownloader supports both portable and standard mode.
