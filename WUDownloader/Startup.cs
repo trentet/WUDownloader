@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using TLogger.Writers;
 
@@ -18,7 +19,7 @@ namespace WUDownloader
                 Console.WriteLine(e.InnerException);
                 throw;
             }
-            Console.WriteLine("Initializing WUDownloader v1.1.0");
+            Console.WriteLine($"Initializing WUDownloader v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"); ;
             Controller c = new Controller();
             c.Run();
         }
