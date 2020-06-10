@@ -7,12 +7,8 @@ namespace WUDownloader
 {
     class DownloadWorker
     {
-        private bool isCompleted;
-        private bool isDownloading;
-
-
-        public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
-        public bool IsDownloading { get => isDownloading; set => isDownloading = value; }
+        public bool IsCompleted { get; private set; }
+        public bool IsDownloading { get; private set; }
 
         public void StartDownload(DownloadItem downloadItem, string downloadFolderPath)
         {
@@ -34,13 +30,13 @@ namespace WUDownloader
             thread.Abort();
         }
 
-        void Client_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             IsDownloading = true;
             double bytesIn = double.Parse(e.BytesReceived.ToString());
             double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
             double percentage = Math.Round(bytesIn / totalBytes * 100, 2);
-            Console.Write("\rDownload status: " + percentage + "%");
+            Console.Write("\rDownload status: " + percentage + "%   "); //3 Extra spaces to wipe leftover digits on whole numbers
         }
         void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {

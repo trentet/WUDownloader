@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
@@ -50,9 +47,7 @@ namespace WUDownloader
             StreamReader reader = new StreamReader(dataStream);
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
-
-            // Display the content.
-            //Console.WriteLine(responseFromServer);
+            
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -72,7 +67,7 @@ namespace WUDownloader
             {
                 string htmlString;
                 Stream receiveStream = response.GetResponseStream();
-                StreamReader readStream = null;
+                StreamReader readStream;
 
                 if (response.CharacterSet == null)
                 {
@@ -110,10 +105,10 @@ namespace WUDownloader
             string[] result = downloadDialogSiteHTML.Split(new[] { '\r', '\n' });
             OrderedDictionary downloadURLs = new OrderedDictionary();
 
-            string url = "";
-            string language = "";
             foreach (string line in result)
             {
+                string url = "";
+                string language = "";
                 if (line.StartsWith("downloadInformation[0].files[")) //All lines with a download URL start with this...
                 {
                     if (line.Contains("].url = '")) //...but end with this before the URL. This allows for any index of file url
@@ -132,26 +127,28 @@ namespace WUDownloader
                         language = longLanguage;
                     }
                 }
-                if (url.Length > 0 && language.Length > 0 && !downloadURLs.Contains(new Uri(url)))
+
+                if (url.Length > 0 && !downloadURLs.Contains(new Uri(url)))
                 {
-                    downloadURLs.Add(new Uri(url),language);
-                    url = "";
-                    language = "";
+                    downloadURLs.Add(new Uri(url), language);
                 }
             }
+
             return downloadURLs;
         }
 
-        private static System.Windows.Forms.HtmlDocument GetHtmlDocumentFromString(string html)
+        private static HtmlDocument GetHtmlDocumentFromString(string html)
         {
             WebBrowser browser = new WebBrowser
             {
                 ScriptErrorsSuppressed = true, //not necessesory you can remove it
                 DocumentText = html
             };
+
             browser.Document.OpenNew(true);
             browser.Document.Write(html);
             browser.Refresh();
+
             return browser.Document;
         }
     }

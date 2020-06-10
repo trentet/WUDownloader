@@ -12,26 +12,23 @@ namespace WUDownloader
     {
         public DownloadManager(List<string> productFilter, List<string> languageFilter)
         {
-            ProductFilter = productFilter;
-            LanguageFilter = languageFilter;
+            this.ProductFilter = productFilter;
+            this.LanguageFilter = languageFilter;
+            this.DownloadQueue = new List<DownloadItem>();
         }
 
-        private List<DownloadItem> downloadQueue = new List<DownloadItem>();
-        private List<string> productFilter = new List<string>();
+        public List<DownloadItem> DownloadQueue { get; private set; }
+        public List<string> ProductFilter { get; set; }
 
-        public List<string> ProductFilter { get => productFilter; set => productFilter = value; }
-
-        private List<string> languageFilter = new List<string>();
-
-        public List<string> LanguageFilter { get => languageFilter; set => languageFilter = value; }
+        public List<string> LanguageFilter { get; set; }
 
         public void AddDownloadItemToQueue(DownloadItem downloadItem)
         {
-            int queueSize = downloadQueue.Count;
-            downloadQueue.Add(downloadItem);
-            if (queueSize + 1 == downloadQueue.Count) //Checks if download queue size increased
+            int queueSize = this.DownloadQueue.Count;
+            this.DownloadQueue.Add(downloadItem);
+            if (queueSize + 1 == this.DownloadQueue.Count) //Checks if download queue size increased
             {
-                Console.WriteLine("Item added to download queue. Queue Size: " + downloadQueue.Count);
+                Console.WriteLine("Item added to download queue. Queue Size: " + this.DownloadQueue.Count);
             }
             else //Queue size did not increase, therefore item was not added successfully
             {
@@ -41,9 +38,9 @@ namespace WUDownloader
         public void DownloadFilesFromQueue()
         {
             Console.WriteLine("Initializing downloads...");
-            Console.WriteLine("Download Queue Size: " + downloadQueue.Count);
+            Console.WriteLine("Download Queue Size: " + this.DownloadQueue.Count);
 
-            List<DownloadItem> SortedDownloadQueue = downloadQueue.OrderBy(o => o.Kb).ToList();
+            List<DownloadItem> SortedDownloadQueue = this.DownloadQueue.OrderBy(o => o.Kb).ToList();
 
             for (int x = 0; x < SortedDownloadQueue.Count; x++) //Runs through sorted download queue
             {
@@ -82,7 +79,7 @@ namespace WUDownloader
                 }
             }
         }
-        public void PopulateDownloadQueue(List<UpdateInfo> updates, DataTable table)
+        public void PopulateDownloadQueue(List<UpdateInfo> updates) //, DataTable table)
         {
             foreach (UpdateInfo update in updates) //For each update
             {
@@ -96,7 +93,7 @@ namespace WUDownloader
                         string product = update.Product.Trim();
                         string language = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Value.ToString();
                         string downloadUrl = update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(x).Key.ToString();
-                        if (languageFilter.Contains(language) && productFilter.Contains(product))
+                        if ( this.LanguageFilter.Contains(language) && this.ProductFilter.Contains(product))
                         {
                             DownloadItem downloadItem = new DownloadItem(
                                 title,
@@ -104,7 +101,8 @@ namespace WUDownloader
                                 product,
                                 downloadUrl,
                                 language
-                                );
+                            );
+
                             AddDownloadItemToQueue(downloadItem);
                         }
                     }

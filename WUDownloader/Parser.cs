@@ -43,9 +43,10 @@ namespace WUDownloader
             List<UpdateInfo> updates = new List<UpdateInfo>();
             for (int x = 0; x < numOfRows; x++)
             {
-                UpdateInfo update = ParseHtmlRow(table.Columns.Count, unparsedRow, x);
+                UpdateInfo update = ParseHtmlRow(unparsedRow, x);
                 updates.Add(update);
             }
+
             return updates;
         }
 
@@ -69,23 +70,23 @@ namespace WUDownloader
             return parsedLines;
         }
 
-        public static UpdateInfo ParseHtmlRow(int columnCount, List<string> rowHTML, int rowIndex)
+        public static UpdateInfo ParseHtmlRow(List<string> rowHTML, int rowIndex)
         {
             int indexOffset = (rowIndex * 7);
 
-            string id = (rowHTML[0 + indexOffset].Split('"', '"')[1]);//id [0]
+            string id = (rowHTML[0 + indexOffset].Split('"', '"')[1]).Trim();//id [0]
                 int pFrom1 = rowHTML[0 + indexOffset].IndexOf(";\">") + ";\">".Length;
                 int pTo1 = rowHTML[0 + indexOffset].LastIndexOf("</A>");
 
-            string title = (rowHTML[0 + indexOffset].Substring(pFrom1, pTo1 - pFrom1)); //title [1]
-            string product = (rowHTML[1 + indexOffset]); //product [2]
-            string classification = (rowHTML[2 + indexOffset]); //classification [3]
+            string title = (rowHTML[0 + indexOffset].Substring(pFrom1, pTo1 - pFrom1)).Trim(); //title [1]
+            string product = (rowHTML[1 + indexOffset]).Trim(); //product [2]
+            string classification = (rowHTML[2 + indexOffset]).Trim(); //classification [3]
             DateTime lastUpdated = Convert.ToDateTime(rowHTML[3 + indexOffset]); //lastUpdated [4]
-            string version = (rowHTML[4 + indexOffset]); //version [5]
+            string version = (rowHTML[4 + indexOffset]).Trim(); //version [5]
                 int pFrom2 = rowHTML[5 + indexOffset].IndexOf("_size>") + "_size>".Length;
                 int pTo2 = rowHTML[5 + indexOffset].LastIndexOf("</SPAN> <SPAN");
 
-            string size = (rowHTML[5 + indexOffset].Substring(pFrom2, pTo2 - pFrom2)); //size [6]
+            string size = (rowHTML[5 + indexOffset].Substring(pFrom2, pTo2 - pFrom2)).Trim(); //size [6]
 
             string downloadDialogSiteHTML = WebController.MakePost(id, Configuration.Download_dialog_url);
             OrderedDictionary downloadUrls = WebController.GetDownloadURLs(downloadDialogSiteHTML); //downloadUrls [7]

@@ -18,10 +18,11 @@ namespace WUDownloader
                         update.Version, update.Size, update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(z).Key.ToString(), update.DownloadUrls.Cast<DictionaryEntry>().ElementAt(z).Value.ToString() };
                     DataRow datarow = TableBuilder.CreateDataRow(table, TableBuilder.AssignTypesToData(table, cellData, false), false);
                     table.AddRowToTable(datarow);
-                }
-                
-                FileIO.ExportDataTableToCSV(table, tablePath, fileName); //Saves table to CSV
+                }              
             }
+
+            FileIO.ExportDataTableToCSV(table, tablePath, fileName); //Saves table to CSV
+
             return table;
         }
     }

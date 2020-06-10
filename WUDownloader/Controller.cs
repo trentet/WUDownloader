@@ -52,7 +52,7 @@ namespace WUDownloader
             Console.WriteLine("1. Collect Update Information");
             Console.WriteLine("2. Collect Update Information & Download Updates");
 
-            int input = 0;
+            int input;
             do
             {
                 input = ConsoleInput.PositiveInteger();
@@ -69,7 +69,7 @@ namespace WUDownloader
         {
             Console.WriteLine("Would you like to import update titles from file or scan current device?");
 
-            int importOrScanInput = 0;
+            int importOrScanInput;
             do
             {
                 Console.WriteLine("\nEnter 1 for Import or 2 for Scan: ");
@@ -88,7 +88,7 @@ namespace WUDownloader
                 Console.WriteLine("\nYou have chosen to Scan. ");
                 Console.WriteLine("\nWould you like to check for available updates or installed updates?");
 
-                int installedOrAvailableinput = 0;
+                int installedOrAvailableinput;
                 do
                 {
                     Console.WriteLine("\nEnter 1 for Available Updates or 2 for Installed Updates: ");
@@ -295,9 +295,9 @@ namespace WUDownloader
                 string[] products = update.Product.Split(',');
                 foreach (string product in products)
                 {
-                    if (!relevantProducts.Contains(update.Product.Trim()))
+                    if (!relevantProducts.Contains(product.Trim()))
                     {
-                        relevantProducts.Add(update.Product.Trim());
+                        relevantProducts.Add(product.Trim());
                     }
                 }
             }
@@ -335,6 +335,7 @@ namespace WUDownloader
             List<string> filteredProductList = new List<string>();
             List<string> filteredLanguageList = new List<string>
             {
+                "",
                 "english",
                 "all"
             };
@@ -349,7 +350,7 @@ namespace WUDownloader
             DownloadManager d = new DownloadManager(filteredProductList, filteredLanguageList);
 
             Console.WriteLine("Populating download queue...");
-            d.PopulateDownloadQueue(updates, table);
+            d.PopulateDownloadQueue(updates);
             Console.WriteLine("Queue loading complete...");
             Console.WriteLine("Initializing download sequence...");
             d.DownloadFilesFromQueue();
