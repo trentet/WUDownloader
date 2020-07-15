@@ -7,7 +7,7 @@ using TableBuilderLibrary;
 
 namespace WUDownloader
 {
-    public class FileIO
+    public static class FileIO
     {
         public static List<string> ImportFileToStringList(string filepath)
         {
